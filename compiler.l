@@ -1,0 +1,20 @@
+%%
+main 		return  fonction_main;
+const 		return  constante;
+int 		return  entier;
+{ 			return  accolade_ouvrant;
+} 			return  accolade_fermant;
+\n 			return  fin_ligne;
+\t			return  tab;
+" "   		return  space;
+"," 		return  virgule;
+"(" 		return  parenthèse_ouvrante;
+")" 		return  parenthèse_fermante;
+";" 		return  fin_d'instruction;
+"+" 		return  OP+;
+"-" 		return  OP-;
+"*" 		return  OP*;
+"/" 		return  OP/;
+"=" 		return  OP=;
+"printf" 	return  fonction_d'affichage;
+[A-Za-z][A-Za-z0-9]* return  identifiant;
