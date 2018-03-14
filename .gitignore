@@ -1,0 +1,4 @@
+compiler.tab.*
+compiler
+lex.yy.c
+flex
