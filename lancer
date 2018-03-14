@@ -1,0 +1,7 @@
+#!/bin/bash
+
+~/bison/bin/bison -d compiler.y
+make
+
+echo ================ TEST =========================
+./compiler < programmeAAnalyser.c

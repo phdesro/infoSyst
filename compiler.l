@@ -1,20 +1,29 @@
+%{
+	#include "compiler.tab.h"
+%}
 %%
-main 		return  fonction_main;
-const 		return  constante;
-int 		return  entier;
-{ 			return  accolade_ouvrant;
-} 			return  accolade_fermant;
-\n 			return  fin_ligne;
-\t			return  tab;
-" "   		return  space;
-"," 		return  virgule;
-"(" 		return  parenthèse_ouvrante;
-")" 		return  parenthèse_fermante;
-";" 		return  fin_d'instruction;
-"+" 		return  OP+;
-"-" 		return  OP-;
-"*" 		return  OP*;
-"/" 		return  OP/;
-"=" 		return  OP=;
-"printf" 	return  fonction_d'affichage;
-[A-Za-z][A-Za-z0-9]* return  identifiant;
+main 		{	return  tFCT_MAIN;	}
+const 		{	return  tCONSTANTE;	}
+int 		{	return  tENTIER;	}
+"\""		{	return	tQUOTEDOUBLE;	}
+"'"			{	return	tQUOTESIMPLE;	}
+"{" 		{	return  tAO;	}
+"}" 		{	return  tAF;	}
+\n 			{	return  tFIN_L;	}
+\t			{	return  tTAB;	}
+" "   		{	return  tSPACE;	}
+"," 		{	return  tVIRGULE;	}
+"(" 		{	return  tPO;	}
+")" 		{	return  tPF;	}
+";" 		{	return  tFIN_I;	}
+"+" 		{	return  tOPADD;	}
+"-" 		{	return  tOPSUB;	}
+"*" 		{	return  tOPMUL;	}
+"/" 		{	return  tOPDIV;	}
+"=" 		{	return  tOPEQU;	}
+"printf" 	{	return  tFCT_PRINTF;	}
+
+[A-Za-z][A-Za-z0-9]* 	{	
+							strcpy(yylval.str, yytext);
+							return  tID;	
+						}
