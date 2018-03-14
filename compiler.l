@@ -3,8 +3,8 @@
 %}
 %%
 main 		{	return  tFCT_MAIN;	}
-const 		{	return  tCONSTANTE;	}
-int 		{	return  tENTIER;	}
+const 		{	return  tCONST;	}
+int 		{	return  tINT;	}
 "\""		{	return	tQUOTEDOUBLE;	}
 "'"			{	return	tQUOTESIMPLE;	}
 "{" 		{	return  tAO;	}
