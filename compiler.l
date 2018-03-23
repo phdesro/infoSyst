@@ -27,3 +27,8 @@ int 		{	return  tINT;	}
 							strcpy(yylval.str, yytext);
 							return  tID;	
 						}
+
+[0-9][0-9]*	{
+				yylval.nb = atoi(yytext);
+				return  tNB;
+			}

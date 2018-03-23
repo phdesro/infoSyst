@@ -9,5 +9,5 @@ compiler: compiler.tab.c lex.yy.c
 	gcc -o compiler lex.yy.c compiler.tab.c libfl.a /home/desroche/bison/lib/liby.a
 
 test: compiler
-	./compiler < test.c
+	./compiler < programmeAAnalyser.c
 
