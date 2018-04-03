@@ -21,6 +21,18 @@ void		{
 				yylval.lxType = s_void;
 				return tVOID; 
 			}
+
+"=="		{	return tEQU;		}
+">"			{	return tSUP; 		}
+">="		{	return tSUPEQU; 	}
+"<"			{	return tINF;		}
+"<="		{	return tINFEQU;		}
+"!="		{	return tDIF;		}
+
+if			{	return 	tIF;	}
+else		{	return  tELSE;	}
+while		{	return 	tWHILE;	}
+
 "\""		{	return	tQUOTEDOUBLE;	}
 "'"			{	return	tQUOTESIMPLE;	}
 "{" 		{	return  tAO;	}
