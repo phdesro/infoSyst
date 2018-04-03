@@ -63,6 +63,8 @@ Type:	tINT
 
 Vérifier avec `make test`
 
+## Note du cours:
+
 ----------- $$ ------------
 E <- E + E
 E <- E * E
