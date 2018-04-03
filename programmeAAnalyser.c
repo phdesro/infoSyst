@@ -1,6 +1,7 @@
 main(a)   {
 	i=3; 
 	int i, j,k ,r;
+	float c;
 	
 	j=4 ;
 	k=8 ;

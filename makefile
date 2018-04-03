@@ -1,13 +1,17 @@
 all: compiler
+
 lex.yy.c: compiler.l
 	./flex	compiler.l
 
 compiler.tab.c: compiler.y
-	/home/desroche/bison/bin/bison -d compiler.y
+	/home/dhnguye1/bison/bin/bison -d compiler.y
 
-compiler: compiler.tab.c lex.yy.c
-	gcc -o compiler lex.yy.c compiler.tab.c libfl.a /home/desroche/bison/lib/liby.a
+compiler: compiler.tab.c lex.yy.c symbol.c symboltab.c
+	gcc -o compiler lex.yy.c compiler.tab.c symbol.c symboltab.c libfl.a /home/dhnguye1/bison/lib/liby.a
 
 test: compiler
 	./compiler < programmeAAnalyser.c
 
+testsymbol: symbol.c symboltab.c
+	gcc symbol.c symboltab.c -o symboltest
+	./symboltest

@@ -1,21 +1,33 @@
-%union { char str[80]; int nb; }
+%code requires {
+	#include <stdio.h>
+	#include "symboltab.h"
+}
+
+%union { 
+	char str[80]; 
+	int nb; 
+	TypeSymbol lxType;
+}
 %left tOPADD tOPSUB
 %left tOPMUL tOPDIV
 
 %{
-	#include <stdio.h>
 	int yylex(void);
 	void yyerror(char*);
+
+	TypeSymbol type_tmp;
+	SymbolTab * symbolTable;
 %}
 
 %token tID tNB tFCT_MAIN tFCT_PRINTF
-%token tCONST tINT
+%token tCONST tINT tFLOAT
 %token tFIN_L tTAB tSPACE
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
 %token tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
 
 %type <str> tID
 %type <nb> tNB
+%type <lxType> tINT tFLOAT Type
 
 %%
 
@@ -43,7 +55,8 @@ Main: tFCT_MAIN tPO MiseEnPage tPF Function_body { printf("main reconnu\n");};
 
 /*-------------- Instruction --------------*/
 
-Declaration: Type MiseEnPage Params tFIN_I {	printf("declaration de var\n");	};
+// { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
+Declaration: Type { type_tmp = $1; } MiseEnPage Params tFIN_I {	printf("declaration de var\n");	};
 
 Affectation: tID MiseEnPage tOPEQU MiseEnPage Expression MiseEnPage tFIN_I;
 
@@ -52,7 +65,10 @@ Expression: tPO Expression tPF;
 Expression: tID;
 Expression: tNB;
 
-tOp: tOPADD | tOPSUB | tOPDIV | tOPMUL ;
+tOp	: tOPADD 
+	| tOPSUB 
+	| tOPDIV 
+	| tOPMUL ;
 
 /* 
 	[les fonctions] ;
@@ -73,18 +89,23 @@ Printf:
 Params:	Param tVIRGULE Params;
 Params:	Param;
 
-Param:	MiseEnPage tID MiseEnPage {printf("Param %s ",$2); };
+Param:	MiseEnPage tID MiseEnPage {printf("Param %s ",$2);
+									pushSymbol(symbolTable, $2, type_tmp); };
 
 /* (Carac MiseEnPage)* */
 MiseEnPage:	Caractere_MiseEnPage MiseEnPage |;
-Caractere_MiseEnPage:	 tTAB | tSPACE | tFIN_L;
+Caractere_MiseEnPage:	 tTAB 
+					| tSPACE 
+					| tFIN_L;
 
-Type:	tINT;
+Type:	tINT 
+		| tFLOAT { $$ = $1; };
 %%
-
-struct
-
+	
 int main(void) {
-	init()
+	symbolTable = new_SymbolTab();
+	//init();
+	
 	yyparse();
+	printSymbolTab(symbolTable);
 }

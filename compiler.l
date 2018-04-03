@@ -4,7 +4,15 @@
 %%
 main 		{	return  tFCT_MAIN;	}
 const 		{	return  tCONST;	}
-int 		{	return  tINT;	}
+
+int			{ 	
+				yylval.lxType = s_int;
+				return tINT; 
+			}
+float		{
+				yylval.lxType = s_float;
+				return tFLOAT; 
+			}
 "\""		{	return	tQUOTEDOUBLE;	}
 "'"			{	return	tQUOTESIMPLE;	}
 "{" 		{	return  tAO;	}

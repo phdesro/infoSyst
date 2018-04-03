@@ -2,6 +2,24 @@
 
 http://homepages.laas.fr/ealata/Projet_Syst_Info_2018.pdf
 
+## TODO:
+### Urgent:
+* if/else
+* while
+* function
+* express arithm
+* err de base
+### plus tard:
+* déclaration fonction imbriquée
+* erreur approfondi
+* jit (?)
+* typessss
+* pointeurs
+* structures
+* tableaux
+* pp
+
+
 ----------- $$ ------------
 E <- E + E
 E <- E * E
