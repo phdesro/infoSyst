@@ -19,6 +19,49 @@ http://homepages.laas.fr/ealata/Projet_Syst_Info_2018.pdf
 * tableaux
 * pp
 
+## Tableau de symbol:
+Pour introduire un nouveau type, à faire 4 étapes:
+1. 
+```c
+// symbol.h
+typedef enum {/*...*/, s_montype} TypeSymbol; // définir le nouveau symbol
+```
+
+2.
+```c
+// symbol.c
+char * typeToString(TypeSymbol type)	{
+	switch(type)	{
+		//...
+		case s_montype:
+			return "montype";	// ceci est pour l'affichage du tableau de caractère
+	}
+}
+```
+
+3.
+```markdown
+/* compiler.l */
+montoken		{
+				yylval.lxType = s_montype;
+				return tTOKEN; 
+			}
+```
+
+4.
+```markdown
+/* compiler.y */
+/*...*/
+%type <lxType> ... tTOKEN ...
+/*...*/
+Type:	tINT 
+		| ...
+		| tTOKEN
+		| tFLOAT { $$ = $1; };
+			}
+```
+
+Vérifier avec `make test`
 
 ----------- $$ ------------
 E <- E + E
