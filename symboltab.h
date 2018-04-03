@@ -10,6 +10,8 @@ typedef struct  {
 	int 	last_adr;
 } SymbolTab;
 
+typedef enum {st_success, st_full, st_existed} ErrorSymbolTab;
+
 // Constructor
 SymbolTab * new_SymbolTab();
 
@@ -18,9 +20,9 @@ int last_adr(SymbolTab * tab);
 
 /**
  * push new symbol to tab
- * @return : new added symbol if success, NULL if error (already in table)
+ * @return : 0 if success, 1 if already exist, 0 if full table
  */
-Symbol * pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type);
+ErrorSymbolTab pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type);
 
 // pop the last symbol from tab, return the popped symbol
 Symbol * popSymbol(SymbolTab * tab);

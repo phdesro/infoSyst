@@ -13,8 +13,10 @@ Symbol * new_Symbol(char * symstr, TypeSymbol type)	{
 
 int sizeSymbol(Symbol* symbol)	{
 	switch(symbol->type)	{
-		case s_int: return 16;
-		default : return -1;	
+		case s_int: 	return 16;
+		case s_float: 	return 32;
+		case s_char: 	return 8;
+		default : 		return -1;	
 	}
 }
 
@@ -34,6 +36,10 @@ char * typeToString(TypeSymbol type)	{
 			return "int";
 		case s_float:
 			return "float";
+		case s_char:
+			return "char";
+		case s_void:
+			return "void";
 		default:
 			return "unknown";
 	}

@@ -20,14 +20,14 @@
 %}
 
 %token tID tNB tFCT_MAIN tFCT_PRINTF
-%token tCONST tINT tFLOAT
+%token tCONST tINT tFLOAT tCHAR tVOID
 %token tFIN_L tTAB tSPACE
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
 %token tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
 
 %type <str> tID
 %type <nb> tNB
-%type <lxType> tINT tFLOAT Type
+%type <lxType> Type tINT tFLOAT tCHAR tVOID
 
 %%
 
@@ -50,13 +50,13 @@ Body_line: 	MiseEnPage;
 
 Instruction: Call_function | Declaration | Affectation;
 
-Main: tFCT_MAIN tPO Params tPF Function_body { printf("main reconnu\n");};
-Main: tFCT_MAIN tPO MiseEnPage tPF Function_body { printf("main reconnu\n");};
+Main: tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_fin\n");};
+Main: tFCT_MAIN tPO MiseEnPage tPF Function_body { printf("main_fin\n");};
 
 /*-------------- Instruction --------------*/
 
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
-Declaration: Type { type_tmp = $1; } MiseEnPage Params tFIN_I {	printf("declaration de var\n");	};
+Declaration: Type { type_tmp = $1; } MiseEnPage Params tFIN_I {	printf("Declaration_fin\n");	};
 
 Affectation: tID MiseEnPage tOPEQU MiseEnPage Expression MiseEnPage tFIN_I;
 
@@ -89,8 +89,16 @@ Printf:
 Params:	Param tVIRGULE Params;
 Params:	Param;
 
-Param:	MiseEnPage tID MiseEnPage {printf("Param %s ",$2);
-									pushSymbol(symbolTable, $2, type_tmp); };
+Param:	MiseEnPage tID MiseEnPage	{
+									printf("Param %s ",$2);
+									ErrorSymbolTab err = pushSymbol(symbolTable, $2, type_tmp); 
+									switch(err)	{
+										case st_success: break;
+										case st_full: printf(">> symtab full << "); break;
+										case st_existed: printf(">> existed symbol << "); break;
+										default: printf(">> cas not handled <<");
+									}
+									};
 
 /* (Carac MiseEnPage)* */
 MiseEnPage:	Caractere_MiseEnPage MiseEnPage |;
@@ -99,6 +107,8 @@ Caractere_MiseEnPage:	 tTAB
 					| tFIN_L;
 
 Type:	tINT 
+		| tVOID
+		| tCHAR
 		| tFLOAT { $$ = $1; };
 %%
 	

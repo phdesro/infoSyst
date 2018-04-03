@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef enum {s_int, s_float} TypeSymbol;
+typedef enum {s_int, s_float, s_char, s_void} TypeSymbol;
 
 typedef struct {
 	char * 	symbol;

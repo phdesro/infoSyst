@@ -2,6 +2,8 @@ main(a)   {
 	i=3; 
 	int i, j,k ,r;
 	float c;
+	void d;
+	char e, a;
 	
 	j=4 ;
 	k=8 ;

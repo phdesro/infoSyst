@@ -13,6 +13,14 @@ float		{
 				yylval.lxType = s_float;
 				return tFLOAT; 
 			}
+char		{
+				yylval.lxType = s_char;
+				return tCHAR; 
+			}
+void		{
+				yylval.lxType = s_void;
+				return tVOID; 
+			}
 "\""		{	return	tQUOTEDOUBLE;	}
 "'"			{	return	tQUOTESIMPLE;	}
 "{" 		{	return  tAO;	}

@@ -13,16 +13,18 @@ int last_adr(SymbolTab * tab)	{
 	return tab->last_adr;
 }
 
-Symbol* pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type)	{
+ErrorSymbolTab pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type)	{
 	
 	if(getIndexSymbolTab(tab, symstr) > -1) {
-		printf("Symbol already existed\n");
-		return NULL;
+		// printf("Symbol already existed\n");
+		// return NULL;
+		return st_existed;
 	}
 
 	if(tab->index > TABMAX)	{
-		printf("Symbol table full\n");
-		return NULL;	
+		// printf("Symbol table full\n");
+		// return NULL;	
+		return st_full;
 	}
 
 	Symbol * symbol;
@@ -32,7 +34,7 @@ Symbol* pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type)	{
 	tab->symbols[tab->index] = symbol;
 	tab->last_adr += sizeSymbol(symbol);
 
-	return symbol;
+	return st_success;
 }
 
 Symbol * popSymbol(SymbolTab * tab)	{
