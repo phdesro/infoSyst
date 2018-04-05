@@ -5,6 +5,13 @@ main(a)   {
 	if(i==j)
 		printf("dansif");
 	printf("horsif");
+
+	if(i<3)	{
+		printf("dansif");	
+		printf("dansif");
+		printf("dansif");
+	}
+	printf("horsif");
 	
 	j=4 ;
 	k=8 ;

@@ -33,19 +33,16 @@
 
 %%
 
-/* 
-	(MiseEnPage)* Main (MiseEnPage)*
-*/
-S:	MiseEnPage Main MiseEnPage;
+//	(MiseEnPage)* Main (MiseEnPage)*
+S:	_ Main _;
 	
-/*
-	{ (Body_line)* }
-*/
-Function_body: MiseEnPage tAO Body_line tAF;
 
-Body_line:	MiseEnPage Body_line
+//	{ (Body_line)* }
+Function_body: _ tAO Body_line tAF;
+
+Body_line:	_ Body_line
 			| Instruction Body_line
-			| MiseEnPage;
+			| _;
 
 Instruction: Call_function 
 			| Declaration 
@@ -53,13 +50,16 @@ Instruction: Call_function
 			| If;
 
 Main: 		tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_fin\n");}
-			| tFCT_MAIN tPO MiseEnPage tPF Function_body { printf("main_fin\n");};
+			| tFCT_MAIN tPO _ tPF Function_body { printf("main_fin\n");};
 
 /*-------------- Syntaxes conditionnelles --------------*/
 
-If:	tIF tPO Condition tPF MiseEnPage Instruction { printf("if_fin\n");};
+If:			tIF Condition_stmt _ Instruction { printf("if_fin\n");}
+			| tIF Condition_stmt _ tAO Body_line tAF { printf("if_fin\n");};
 
-Condition:	Condition tCOND Condition
+Condition_stmt: tPO _ Condition _ tPF;
+
+Condition:	Condition _ tCOND _ Condition
 			| tID
 			| tNB;
 
@@ -73,9 +73,9 @@ tCOND: 		tEQU
 /*-------------- Instructions --------------*/
 
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
-Declaration: Type { type_tmp = $1; } MiseEnPage Params tFIN_I {	printf("Declaration_fin\n");	};
+Declaration: Type { type_tmp = $1; } _ Params tFIN_I {	printf("Declaration_fin\n");	};
 
-Affectation: tID MiseEnPage tOPEQU MiseEnPage Expression MiseEnPage tFIN_I;
+Affectation: tID _ tOPEQU _ Expression _ tFIN_I;
 
 Expression:	Expression tOp Expression
 			| tPO Expression tPF
@@ -87,9 +87,7 @@ tOp: 		tOPADD
 			| tOPDIV 
 			| tOPMUL ;
 
-/* 
-	[les fonctions] ;
-*/
+/*-------------- Functions specifiques --------------*/
 Call_function:
 	Printf tFIN_I; 
 
@@ -97,29 +95,30 @@ Printf:		tFCT_PRINTF tPO tID tPF 							{ printf("printf -> %s\n", $3);	}
 			| tFCT_PRINTF tPO tQUOTEDOUBLE tID tQUOTEDOUBLE tPF { printf("printf -> %s\n", $4); };
 
 
-/* 
-	""|Param | (Param,)* 
-*/
+//	""|Param | (Param,)* 
 Params:		Param tVIRGULE Params
 			| Param;
 
-Param:	MiseEnPage tID MiseEnPage	{
-										printf("Param %s ",$2);
-										ErrorSymbolTab err = pushSymbol(symbolTable, $2, type_tmp); 
-										switch(err)	{
-											case st_success: break; 
-											case st_full: printf(">> symtab full << "); break;
-											case st_existed: printf(">> existed symbol << "); break;
-											default: printf(">> cas not handled <<");
-										}
-									};
+Param:	_ tID _	{
+					printf("Param %s ",$2);
+					ErrorSymbolTab err = pushSymbol(symbolTable, $2, type_tmp); 
+					switch(err)	{
+						case st_success: break; 
+						case st_full: printf(">> symtab full << "); break;
+						case st_existed: printf(">> existed symbol << "); break;
+						default: printf(">> cas not handled <<");
+					}
+				};
 
-/* (Carac MiseEnPage)* */
-MiseEnPage:	Caractere_MiseEnPage MiseEnPage |;
+// (Carac MiseEnPage)* 
+_:	Caractere_MiseEnPage _ 
+			|;
+
 Caractere_MiseEnPage: tTAB 
 			| tSPACE 
 			| tFIN_L;
 
+// Gestion de typage
 Type:		tINT 
 			| tVOID
 			| tCHAR
