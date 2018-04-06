@@ -54,8 +54,12 @@ Main: 		tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_f
 
 /*-------------- Syntaxes conditionnelles --------------*/
 
-If:			tIF Condition_stmt _ Instruction { printf("if_fin\n");}
-			| tIF Condition_stmt _ tAO Body_line tAF { printf("if_fin\n");};
+If:			tIF _ Condition_stmt _ Instruction _ Else { printf("if_fin\n");}
+			| tIF _ Condition_stmt _ tAO Body_line tAF _ Else { printf("if_fin\n");};
+
+Else:		tELSE _ Instruction 		{ printf("else_fin\n");}
+			| tELSE _ tAO Body_line tAF	{ printf("else_fin\n");}
+			| ;
 
 Condition_stmt: tPO _ Condition _ tPF;
 

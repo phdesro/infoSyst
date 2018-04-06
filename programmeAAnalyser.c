@@ -2,14 +2,19 @@ main(a)   {
 	i=3; 
 	int i, j,k ,r;
 
-	if(i==j)
+	if (i==j)
 		printf("dansif");
+	else
+		printf("danselse");
 	printf("horsif");
 
 	if(i<3)	{
 		printf("dansif");	
 		printf("dansif");
 		printf("dansif");
+	} else {
+		printf("danselse");
+		printf("danselse");
 	}
 	printf("horsif");
 	
