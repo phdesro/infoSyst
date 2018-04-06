@@ -146,6 +146,18 @@ E -> E + E {
 	... free_tmp();
 }
 
+----------- $$ ------------
+Problème de registre: On a que 3 reg max R0 1 2
+Si on doit réaliser une opération de plusieurs variables -> niqué (a = b + c + d + e + d + f;)
+=> Entregistre en mémoire : LOAD, STORE __
+
+Exemple: avec 3 lignes:
+int i;
+int j = 2;
+i = j + 1;
+
+En yacc:
+decl: tINT tID
 
 
 

@@ -16,22 +16,25 @@ typedef enum {st_success, st_full, st_existed} ErrorSymbolTab;
 SymbolTab * new_SymbolTab();
 
 // get last memorized address 
-int last_adr(SymbolTab * tab);
+int ts_peek(SymbolTab * tab);
+
+// pop last memorized address 
+int ts_pop(SymbolTab * tab);
 
 /**
  * push new symbol to tab
  * @return : 0 if success, 1 if already exist, 0 if full table
  */
-ErrorSymbolTab pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type);
+ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type);
 
 // pop the last symbol from tab, return the popped symbol
-Symbol * popSymbol(SymbolTab * tab);
+Symbol * ts_popSymbol(SymbolTab * tab);
+
 
 // print out the tab with format json
-void printSymbolTab(SymbolTab * tab);
+void ts_print(SymbolTab * tab);
 
-/*================== PRIVATE ========================*/
+//
+int ts_exists(SymbolTab * tab, char * symstr, int depth);
 
-// get index in table from tab
-// return -1 if not exist
-int getIndexSymbolTab(SymbolTab * tab, char * symstr);
+int ts_getAdr(SymbolTab * tab, char * symstr);

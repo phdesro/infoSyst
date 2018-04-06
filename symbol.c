@@ -1,6 +1,6 @@
 #include "symbol.h"
 
-Symbol * new_Symbol(char * symstr, TypeSymbol type)	{
+Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr)	{
 	Symbol * sym = malloc(sizeof(Symbol));
 	sym->symbol = malloc(strlen(symstr));
 
@@ -8,10 +8,13 @@ Symbol * new_Symbol(char * symstr, TypeSymbol type)	{
 
 	sym->depth = 0;
 	sym->type = type;
+
+	sym->adr = adr;
+
 	return sym;
 }
 
-int sizeSymbol(Symbol* symbol)	{
+int s_size(Symbol* symbol)	{
 	switch(symbol->type)	{
 		case s_int: 	return 16;
 		case s_float: 	return 32;
@@ -20,14 +23,14 @@ int sizeSymbol(Symbol* symbol)	{
 	}
 }
 
-int deleteSymbol(Symbol* symbol)	{
+int s_delete(Symbol* symbol)	{
 	free(symbol->symbol);
 	free(symbol);
 	symbol = NULL;
 }
 
-void printSymbol(Symbol * symbol)	{
-	printf("{ symbol = %s, depth = %d, type = %s}", symbol->symbol, symbol->depth, typeToString(symbol->type));
+void s_print(Symbol * symbol)	{
+	printf("{ symbol = %s, depth = %d, type = %s, adr = %d}", symbol->symbol, symbol->depth, typeToString(symbol->type), symbol->adr);
 }
 
 char * typeToString(TypeSymbol type)	{
@@ -45,8 +48,8 @@ char * typeToString(TypeSymbol type)	{
 	}
 }
 
-int equalsSymbol(Symbol * symbol, char * new_symbol) {
-	if (strcmp(symbol->symbol, new_symbol) == 0)
+int s_equals(Symbol * symbol, char * new_symbol, int depth) {
+	if (strcmp(symbol->symbol, new_symbol) == 0 && (depth < 0 || symbol->depth == depth))
 		return 1;
 	return 0;
 }
