@@ -2,42 +2,48 @@
 
 SymbolTab * new_SymbolTab() {
 	SymbolTab * tab = malloc(sizeof(SymbolTab));
-	tab->last_adr = 0;
+	tab->last_adr = -1;
 	tab->index = -1;
 	for(int i = 0; i < TABMAX; i++)	{
 		tab->symbols[i] = NULL;	
 	}
 }
 
-int last_adr(SymbolTab * tab)	{
+int ts_peek(SymbolTab * tab)	{
 	return tab->last_adr;
 }
 
-ErrorSymbolTab pushSymbol(SymbolTab * tab, char * symstr, TypeSymbol type)	{
-	
-	if(getIndexSymbolTab(tab, symstr) > -1) {
-		// printf("Symbol already existed\n");
-		// return NULL;
-		return st_existed;
-	}
+int ts_pop(SymbolTab * tab)	{
+	int last_adr = ts_peek(tab);
+	Symbol * sym = ts_popSymbol(tab);	
+	s_delete(sym);
+	return last_adr;
+}
 
-	if(tab->index > TABMAX)	{
+ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type)	{
+
+	if(tab->index > TABMAX - 2)	{
 		// printf("Symbol table full\n");
 		// return NULL;	
 		return st_full;
 	}
 
-	Symbol * symbol;
-	tab->index++;
-	symbol = new_Symbol(symstr, type);
-	
+	// calcul last_adr
+	if(tab->last_adr < 0)
+		tab->last_adr = 0;
+	else {
+		tab->last_adr += s_size(tab->symbols[tab->index]);
+	}
+
+	Symbol * symbol = new_Symbol(symstr, type, tab->last_adr);
+
+	tab->index++;	
 	tab->symbols[tab->index] = symbol;
-	tab->last_adr += sizeSymbol(symbol);
 
 	return st_success;
 }
 
-Symbol * popSymbol(SymbolTab * tab)	{
+Symbol * ts_popSymbol(SymbolTab * tab)	{
 
 	if(tab->index < 0)	{
 		printf("Symbol table empty\n");
@@ -46,12 +52,12 @@ Symbol * popSymbol(SymbolTab * tab)	{
 
 	Symbol * symbol = tab->symbols[tab->index];
 
-	tab->last_adr -= sizeSymbol(symbol);
+	tab->last_adr -= s_size(symbol);
 	tab->index--;
 	return symbol;
 }
 
-void printSymbolTab(SymbolTab * tab) {
+void ts_print(SymbolTab * tab) {
 
 	printf("Symbol Tab : {\n");
 	printf("\tsize : %d,\n", tab->index + 1);
@@ -60,7 +66,7 @@ void printSymbolTab(SymbolTab * tab) {
 	if(tab->index > -1)	{
 		for(int i = 0; i <= tab->index; i++)	{
 			printf("\t\t");
-			printSymbol(tab->symbols[i]);
+			s_print(tab->symbols[i]);
 			if(i > 0) 
 				printf(",");
 			printf("\n");
@@ -70,19 +76,31 @@ void printSymbolTab(SymbolTab * tab) {
 	printf("}\n");
 }
 
-/*================== PRIVATE ========================*/
-int getIndexSymbolTab(SymbolTab * tab, char * symstr) {
-	
+int ts_exists(SymbolTab * tab, char * symstr, int depth) {
 	if(tab->index == -1)
-		return -1;
+		return 0;
 
 	for(int i = 0; i <= tab->index; i++) {
-		if(equalsSymbol(tab->symbols[i], symstr))
-			return i;	
+		if(s_equals(tab->symbols[i], symstr, depth))
+			return 1;	
 	}
 
+	return 0;
+}
+
+int ts_getAdr(SymbolTab * tab, char * symstr)	{
+	if(tab->index < 0)	{
+		return -1;	
+	}
+	
+	for(int i = tab->index; i >= 0; i--) {
+		if(s_equals(tab->symbols[i], symstr, -1))	{
+			return tab->symbols[i]->adr;
+		}
+	}
 	return -1;
 }
+
 
 /*
 int main()	{
@@ -94,18 +112,18 @@ int main()	{
 	printSymbolTab(tab);
 
 	printf("\nPush symbol_1 =======================\n");	
-	pushSymbol(tab,"symbol_1");
-	printSymbolTab(tab);
+	ts_push(tab,"symbol_1");
+	ts_print(tab);
 
 	printf("\nPush symbol_2, push symbol_3, pop =======================\n");	
-	pushSymbol(tab,"symbol_2");
-	pushSymbol(tab,"symbol_3");
-	popSymbol(tab);	
+	ts_push(tab,"symbol_2");
+	ts_push(tab,"symbol_3");
+	ts_pop(tab);	
 	printSymbolTab(tab);
 
 	printf("\nPush symbol_2 =======================\n");	
-	pushSymbol(tab,"symbol_2");
-	printSymbolTab(tab);
+	ts_push(tab,"symbol_2");
+	ts_print(tab);
 
 	return 0;
 }*/

@@ -64,8 +64,7 @@ Else:		tELSE _ Instruction 		{ printf("else_fin\n");}
 Condition_stmt: tPO _ Condition _ tPF;
 
 Condition:	Condition _ tCOND _ Condition
-			| tID
-			| tNB;
+			| Expression;
 
 tCOND: 		tEQU
 			| tSUP
@@ -77,19 +76,56 @@ tCOND: 		tEQU
 /*-------------- Instructions --------------*/
 
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
-Declaration: Type { type_tmp = $1; } _ Params tFIN_I {	printf("Declaration_fin\n");	};
+Declaration: Type { type_tmp = $1; } _ Params tFIN_I {  };
 
-Affectation: tID _ tOPEQU _ Expression _ tFIN_I;
+Affectation: tID _ tOPEQU _ Expression _ tFIN_I { 
+												
+												};
 
-Expression:	Expression tOp Expression
-			| tPO Expression tPF
-			| tID
-			| tNB;
+Expression:	Expression _ tOPMUL _ Expression 	{ 	
+													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+													printf("MUL 0 1 0 \n");
+													printf("STORE %d 0 \n", ts_peek(symbolTable));
+												}
+			| Expression _ tOPDIV _ Expression	{ 	
+													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+													printf("DIV 0 1 0 \n");
+													printf("STORE %d 0 \n", ts_peek(symbolTable));
+												}
+			| Expression _ tOPADD _ Expression	{ 	
+													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+													printf("ADD 0 1 0 \n");
+													printf("STORE %d 0 \n", ts_peek(symbolTable));
+												}
+			| Expression _ tOPSUB _ Expression	{ 	
+													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+													printf("SUB 0 1 0 \n");
+													printf("STORE %d 0 \n", ts_peek(symbolTable));
+												}
+			| tPO _ Expression _ tPF
+			| tID								{	
+													ts_push(symbolTable, "tmp", s_int);
+													int existed_adr = ts_getAdr(symbolTable, $1);
+													if(existed_adr < 0) { printf("%s non declare\n", $1); exit(0); }
+													printf("LOAD 0 %d \n", existed_adr);
+													printf("STORE %d 0 \n", ts_peek(symbolTable)); 
+												}
+			| tNB								{ 
+													ts_push(symbolTable, "tmp", s_int); 
+													printf("AFC 0 %d\n",$1); 
+													printf("STORE %d 0\n", ts_peek(symbolTable)); 
+												};
 
-tOp: 		tOPADD 
-			| tOPSUB 
-			| tOPDIV 
-			| tOPMUL ;
+/*
+tOp: 		tOPMUL
+			| tOPDIV
+			| tOPADD
+			| tOPSUB;
+*/
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
@@ -105,7 +141,9 @@ Params:		Param tVIRGULE Params
 
 Param:	_ tID _	{
 					printf("Param %s ",$2);
-					ErrorSymbolTab err = pushSymbol(symbolTable, $2, type_tmp); 
+					ErrorSymbolTab err = ts_push(symbolTable, $2, type_tmp); 
+
+					// handlle error after pushed
 					switch(err)	{
 						case st_success: break; 
 						case st_full: printf(">> symtab full << "); break;
@@ -134,5 +172,5 @@ int main(void) {
 	//init();
 	
 	yyparse();
-	printSymbolTab(symbolTable);
+	ts_print(symbolTable);
 }
