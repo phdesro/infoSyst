@@ -4,10 +4,10 @@ lex.yy.c: compiler.l
 	./flex	compiler.l
 
 compiler.tab.c: compiler.y
-	/home/desroche/bison/bin/bison -d compiler.y
+	~/bison/bin/bison -d compiler.y
 
 compiler: compiler.tab.c lex.yy.c symbol.c symboltab.c
-	gcc -o compiler lex.yy.c compiler.tab.c symbol.c symboltab.c libfl.a /home/desroche/bison/lib/liby.a
+	gcc -o compiler lex.yy.c compiler.tab.c symbol.c symboltab.c libfl.a ~/bison/lib/liby.a
 
 test: compiler
 	./compiler < programmeAAnalyser.c
