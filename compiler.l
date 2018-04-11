@@ -5,22 +5,10 @@
 main 		{	return  tFCT_MAIN;	}
 const 		{	return  tCONST;	}
 
-int			{ 	
-				yylval.lxType = s_int;
-				return tINT; 
-			}
-float		{
-				yylval.lxType = s_float;
-				return tFLOAT; 
-			}
-char		{
-				yylval.lxType = s_char;
-				return tCHAR; 
-			}
-void		{
-				yylval.lxType = s_void;
-				return tVOID; 
-			}
+int			{ 	yylval.lxType = s_int;		return tINT; 	}
+float		{	yylval.lxType = s_float;	return tFLOAT;	}
+char		{	yylval.lxType = s_char;		return tCHAR; 	}
+void		{	yylval.lxType = s_void;		return tVOID; 	}
 
 "=="		{	return tEQU;		}
 ">"			{	return tSUP; 		}
