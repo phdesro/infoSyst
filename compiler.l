@@ -5,11 +5,17 @@
 main 		{	return  tFCT_MAIN;	}
 const 		{	return  tCONST;	}
 
+%{
+/* types */
+%}
 int			{ 	yylval.lxType = s_int;		return tINT; 	}
 float		{	yylval.lxType = s_float;	return tFLOAT;	}
 char		{	yylval.lxType = s_char;		return tCHAR; 	}
 void		{	yylval.lxType = s_void;		return tVOID; 	}
 
+%{
+/* conditions */
+%}
 "=="		{	return tEQU;		}
 ">"			{	return tSUP; 		}
 ">="		{	return tSUPEQU; 	}
@@ -17,6 +23,9 @@ void		{	yylval.lxType = s_void;		return tVOID; 	}
 "<="		{	return tINFEQU;		}
 "!="		{	return tDIF;		}
 
+%{
+/* conditional loops */
+%}
 if			{	return 	tIF;	}
 else		{	return  tELSE;	}
 while		{	return 	tWHILE;	}
@@ -25,19 +34,38 @@ while		{	return 	tWHILE;	}
 "'"			{	return	tQUOTESIMPLE;	}
 "{" 		{	return  tAO;	}
 "}" 		{	return  tAF;	}
+
+%{
+/* mise en page */
+%}
 \n 			{	return  tFIN_L;	}
 \t			{	return  tTAB;	}
-" "   		{	return  tSPACE;	}
+" "   		{	return  tSPACE;		}
 "," 		{	return  tVIRGULE;	}
+";" 		{	return  tFIN_I;		}
+
 "(" 		{	return  tPO;	}
 ")" 		{	return  tPF;	}
-";" 		{	return  tFIN_I;	}
-"+" 		{	return  tOPADD;	}
-"-" 		{	return  tOPSUB;	}
-"*" 		{	return  tOPMUL;	}
-"/" 		{	return  tOPDIV;	}
-"=" 		{	return  tOPEQU;	}
+
+%{
+/* operations */
+%}
+"+" 		{	return  tOPADD;		}
+"-" 		{	return  tOPSUB;		}
+"*" 		{	return  tOPMUL;		}
+"/" 		{	return  tOPDIV;		}
+"=" 		{	return  tOPEQU;		}
+
+%{
+/* basic functions */
+%}
 "printf" 	{	return  tFCT_PRINTF;	}
+
+%{
+/* comments */
+%}
+\/\/.+\n			{	return 	tCOMMENT_S;		}
+\/\*(.|\n)*\*\/	{	return	tCOMMENT_C;		}
 
 [A-Za-z][A-Za-z0-9]* 	{	
 							strcpy(yylval.str, yytext);

@@ -21,7 +21,7 @@
 
 %token tID tNB tFCT_MAIN tFCT_PRINTF
 %token tCONST tINT tFLOAT tCHAR tVOID
-%token tFIN_L tTAB tSPACE
+%token tFIN_L tTAB tSPACE tCOMMENT_S tCOMMENT_C
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
 %token tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
 %token tEQU tSUP tSUPEQU tINF tINFEQU tDIF
@@ -33,7 +33,7 @@
 
 %%
 
-//	(MiseEnPage)* Main (MiseEnPage)*
+//	starting point
 S:	_ Main _;
 	
 
@@ -78,54 +78,45 @@ tCOND: 		tEQU
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
 Declaration: Type { type_tmp = $1; } _ Params tFIN_I {  };
 
-Affectation: tID _ tOPEQU _ Expression _ tFIN_I { 
-												
-												};
+Affectation: tID _ tOPEQU _ Expression tFIN_I;
 
-Expression:	Expression _ tOPMUL _ Expression 	{ 	
+Expression:	Expression tOPMUL _ Expression 	{ 	
 													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
 													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
 													printf("MUL 0 1 0 \n");
 													printf("STORE %d 0 \n", ts_peek(symbolTable));
 												}
-			| Expression _ tOPDIV _ Expression	{ 	
+			| Expression tOPDIV _ Expression	{ 	
 													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
 													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
 													printf("DIV 0 1 0 \n");
 													printf("STORE %d 0 \n", ts_peek(symbolTable));
 												}
-			| Expression _ tOPADD _ Expression	{ 	
+			| Expression tOPADD _ Expression	{ 	
 													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
 													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
 													printf("ADD 0 1 0 \n");
 													printf("STORE %d 0 \n", ts_peek(symbolTable));
 												}
-			| Expression _ tOPSUB _ Expression	{ 	
+			| Expression tOPSUB _ Expression	{ 	
 													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
 													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
 													printf("SUB 0 1 0 \n");
 													printf("STORE %d 0 \n", ts_peek(symbolTable));
 												}
-			| tPO _ Expression _ tPF
-			| tID								{	
+			| tPO _ Expression tPF _
+			| tID _								{	
 													ts_push(symbolTable, "tmp", s_int);
-													int existed_adr = ts_getAdr(symbolTable, $1);
-													if(existed_adr < 0) { printf("%s non declare\n", $1); exit(0); }
-													printf("LOAD 0 %d \n", existed_adr);
+													int existing_adr = ts_getAdr(symbolTable, $1);
+													if(existing_adr < 0) { printf("%s non declare\n", $1); exit(0); }
+													printf("LOAD 0 %d \n", existing_adr);
 													printf("STORE %d 0 \n", ts_peek(symbolTable)); 
 												}
-			| tNB								{ 
+			| tNB _								{ 
 													ts_push(symbolTable, "tmp", s_int); 
 													printf("AFC 0 %d\n",$1); 
 													printf("STORE %d 0\n", ts_peek(symbolTable)); 
 												};
-
-/*
-tOp: 		tOPMUL
-			| tOPDIV
-			| tOPADD
-			| tOPSUB;
-*/
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
@@ -156,7 +147,9 @@ Param:	_ tID _	{
 _:	Caractere_MiseEnPage _ 
 			|;
 
-Caractere_MiseEnPage: tTAB 
+Caractere_MiseEnPage: tTAB
+			| tCOMMENT_S
+			| tCOMMENT_C 
 			| tSPACE 
 			| tFIN_L;
 
