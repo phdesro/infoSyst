@@ -1,6 +1,7 @@
 # infoSyst
 
-http://homepages.laas.fr/ealata/Projet_Syst_Info_2018.pdf
+docs : http://homepages.laas.fr/ealata/Projet_Syst_Info_2018.pdf
+shift_left : http://en.cppreference.com/w/c/language/operator_precedence
 
 ## TODO:
 ### Urgent:

@@ -1,7 +1,17 @@
 %{
 	#include "compiler.tab.h"
 %}
+
+%x comment
+
 %%
+
+"/*"         BEGIN(comment);
+<comment>[^*\n]*        
+<comment>"*"+[^*/\n]*   
+<comment>\n             
+<comment>"*"+"/"        BEGIN(INITIAL);
+
 main 		{	return  tFCT_MAIN;	}
 const 		{	return  tCONST;	}
 
@@ -16,12 +26,12 @@ void		{	yylval.lxType = s_void;		return tVOID; 	}
 %{
 /* conditions */
 %}
-"=="		{	return tEQU;		}
-">"			{	return tSUP; 		}
-">="		{	return tSUPEQU; 	}
-"<"			{	return tINF;		}
-"<="		{	return tINFEQU;		}
-"!="		{	return tDIF;		}
+"=="		{	strcpy(yylval.str, "EQU"); return tEQU;		}
+">"			{	strcpy(yylval.str, "SUP"); return tSUP; 		}
+">="		{	strcpy(yylval.str, "SUPE"); return tSUPEQU; 	}
+"<"			{	strcpy(yylval.str, "INF"); return tINF;		}
+"<="		{	strcpy(yylval.str, "INFE"); return tINFEQU;		}
+"!="		{	strcpy(yylval.str, "DIF"); return tDIF;		}
 
 %{
 /* conditional loops */
@@ -38,9 +48,7 @@ while		{	return 	tWHILE;	}
 %{
 /* mise en page */
 %}
-\n 			{	return  tFIN_L;	}
-\t			{	return  tTAB;	}
-" "   		{	return  tSPACE;		}
+[ \n\t]		{	}
 "," 		{	return  tVIRGULE;	}
 ";" 		{	return  tFIN_I;		}
 
@@ -64,8 +72,9 @@ while		{	return 	tWHILE;	}
 %{
 /* comments */
 %}
-\/\/.+\n			{	return 	tCOMMENT_S;		}
-\/\*(.|\n)*\*\/	{	return	tCOMMENT_C;		}
+\/\/.+\n	{	}	
+
+
 
 [A-Za-z][A-Za-z0-9]* 	{	
 							strcpy(yylval.str, yytext);

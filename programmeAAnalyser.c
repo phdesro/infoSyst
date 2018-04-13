@@ -1,7 +1,8 @@
 main(a)   {
-	i=(3 +4) * 5 ; 
-	/*int i, j,k ,r;
-
+	//int i, j,k ,r;
+	int i;
+		
+	/* ---- test if ----
 	if (i==j)
 		printf("dansif");
 	else
@@ -16,14 +17,17 @@ main(a)   {
 		printf("danselse");
 		printf("danselse");
 	}
-
 	printf("horsif");
+	*/
 	
+	/* --- test operation ---
 	j=4 ;
 	k=8 ;
-	printf(i);
 	
-	r=(i+j)*(i+k/j) ;*/
+	r=(i+j)*(i+k/j) ;
+	*/
 
-	printf("toto");
+	if(i>= 0)
+		i=3;
+
 }

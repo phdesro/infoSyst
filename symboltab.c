@@ -88,6 +88,9 @@ int ts_exists(SymbolTab * tab, char * symstr, int depth) {
 	return 0;
 }
 
+// @param: symbol_table{SymbolTab * }, nom_de_variable {str}
+// @return: return a positive of closest symbol in SymbolTab that has the highest existing depth.
+//			-1 in case not found
 int ts_getAdr(SymbolTab * tab, char * symstr)	{
 	if(tab->index < 0)	{
 		return -1;	

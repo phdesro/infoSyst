@@ -1,6 +1,6 @@
 %code requires {
 	#include <stdio.h>
-	#include "symboltab.h"
+	#include "symtab/symboltab.h"
 }
 
 %union { 
@@ -8,6 +8,10 @@
 	int nb; 
 	TypeSymbol lxType;
 }
+
+%left tEQU tDIF
+%left tSUPEQU tSUP tINF tINFEQU
+
 %left tOPADD tOPSUB
 %left tOPMUL tOPDIV
 
@@ -21,52 +25,61 @@
 
 %token tID tNB tFCT_MAIN tFCT_PRINTF
 %token tCONST tINT tFLOAT tCHAR tVOID
-%token tFIN_L tTAB tSPACE tCOMMENT_S tCOMMENT_C
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
 %token tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
 %token tEQU tSUP tSUPEQU tINF tINFEQU tDIF
 %token tIF tELSE tWHILE 
 
-%type <str> tID
+%type <str> tID tCOND tEQU tSUP tSUPEQU tINF tINFEQU tDIF
 %type <nb> tNB
 %type <lxType> Type tINT tFLOAT tCHAR tVOID
 
 %%
 
 //	starting point
-S:	_ Main _;
+S: Main ;
 	
 
 //	{ (Body_line)* }
-Function_body: _ tAO Body_line tAF;
+Function_body: tAO Body_line tAF;
 
-Body_line:	_ Body_line
-			| Instruction Body_line
-			| _;
+Body_line:	Instruction Body_line
+			| Instruction;
 
 Instruction: Call_function 
 			| Declaration 
 			| Affectation
-			| If;
+			| If
+			| While;
 
 Main: 		tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_fin\n");}
-			| tFCT_MAIN tPO _ tPF Function_body { printf("main_fin\n");};
+			| tFCT_MAIN tPO tPF Function_body { printf("main_fin\n");};
 
 /*-------------- Syntaxes conditionnelles --------------*/
 
-If:			tIF _ Condition_stmt _ Instruction _ Else { printf("if_fin\n");}
-			| tIF _ Condition_stmt _ tAO Body_line tAF _ Else { printf("if_fin\n");};
+If:			tIF Condition_stmt Instruction Else { printf("if_fin\n");}
+			| tIF Condition_stmt tAO Body_line tAF Else { printf("if_fin\n");};
+											
 
-Else:		tELSE _ Instruction 		{ printf("else_fin\n");}
-			| tELSE _ tAO Body_line tAF	{ printf("else_fin\n");}
+Else:		tELSE Instruction 		{ printf("else_fin\n");}
+			| tELSE tAO Body_line tAF	{ printf("else_fin\n");}
 			| ;
 
-Condition_stmt: tPO _ Condition _ tPF;
+While:		tWHILE Condition_stmt Instruction { printf("while_fin\n");}
+			| tWHILE Condition_stmt tAO Body_line tAF { printf("while_fin\n");}
+			| tWHILE Condition_stmt tFIN_I { printf("[warning] empty while\n");};
+											
 
-Condition:	Condition _ tCOND _ Condition
-			| Expression;
+Condition_stmt: tPO Condition tPF;
 
-tCOND: 		tEQU
+Condition:	Condition tCOND Condition 	{ 
+											printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+											printf("LOAD 1 %d \n", ts_pop(symbolTable)); 
+											printf("%s 0 0 1\n", $2); 
+										}
+			| Expression ;
+
+tCOND: 		tEQU { strcpy($$,$1); }
 			| tSUP
 			| tSUPEQU
 			| tINF
@@ -76,47 +89,59 @@ tCOND: 		tEQU
 /*-------------- Instructions --------------*/
 
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
-Declaration: Type { type_tmp = $1; } _ Params tFIN_I {  };
+Declaration: Type { type_tmp = $1; } Params tFIN_I {  };
 
-Affectation: tID _ tOPEQU _ Expression tFIN_I;
+Affectation: tID tOPEQU Expression tFIN_I	{	
+												int existing_adr = ts_getAdr(symbolTable, $1);
+												if(existing_adr < 0) { 
+													printf("\n\n[error] %s undeclared\n\n", $1); 
+												}
+												else {
+													printf("LOAD 0 %d\n", ts_pop(symbolTable));
+													printf("STORE %d 0\n", existing_adr);
+												}
+											};
 
-Expression:	Expression tOPMUL _ Expression 	{ 	
-													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-													printf("MUL 0 1 0 \n");
-													printf("STORE %d 0 \n", ts_peek(symbolTable));
-												}
-			| Expression tOPDIV _ Expression	{ 	
-													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-													printf("DIV 0 1 0 \n");
-													printf("STORE %d 0 \n", ts_peek(symbolTable));
-												}
-			| Expression tOPADD _ Expression	{ 	
-													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-													printf("ADD 0 1 0 \n");
-													printf("STORE %d 0 \n", ts_peek(symbolTable));
-												}
-			| Expression tOPSUB _ Expression	{ 	
-													printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-													printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-													printf("SUB 0 1 0 \n");
-													printf("STORE %d 0 \n", ts_peek(symbolTable));
-												}
-			| tPO _ Expression tPF _
-			| tID _								{	
-													ts_push(symbolTable, "tmp", s_int);
-													int existing_adr = ts_getAdr(symbolTable, $1);
-													if(existing_adr < 0) { printf("%s non declare\n", $1); exit(0); }
+Expression:	tID								{	
+												ts_push(symbolTable, "tmp", s_int);
+												int existing_adr = ts_getAdr(symbolTable, $1);
+												if(existing_adr < 0) { 
+													printf("\n\n[error] %s undeclared\n\n", $1);
+												} else {
 													printf("LOAD 0 %d \n", existing_adr);
 													printf("STORE %d 0 \n", ts_peek(symbolTable)); 
 												}
-			| tNB _								{ 
-													ts_push(symbolTable, "tmp", s_int); 
-													printf("AFC 0 %d\n",$1); 
-													printf("STORE %d 0\n", ts_peek(symbolTable)); 
-												};
+											}
+			| tNB							{ 
+												ts_push(symbolTable, "tmp", s_int); 
+												printf("AFC 0 %d\n",$1); 
+												printf("STORE %d 0\n", ts_peek(symbolTable)); 
+											}
+			| Expression tOPMUL Expression 	{ 	
+												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+												printf("MUL 0 1 0 \n");
+												printf("STORE %d 0 \n", ts_peek(symbolTable));
+											}
+			| Expression tOPDIV Expression	{ 	
+												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+												printf("DIV 0 1 0 \n");
+												printf("STORE %d 0 \n", ts_peek(symbolTable));
+											}
+			| Expression tOPADD Expression	{ 	
+												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+												printf("ADD 0 1 0 \n");
+												printf("STORE %d 0 \n", ts_peek(symbolTable));
+											}
+			| Expression tOPSUB Expression	{ 	
+												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
+												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
+												printf("SUB 0 1 0 \n");
+												printf("STORE %d 0 \n", ts_peek(symbolTable));
+											}
+			| tPO Expression tPF ;
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
@@ -125,33 +150,21 @@ Call_function:
 Printf:		tFCT_PRINTF tPO tID tPF 							{ printf("printf -> %s\n", $3);	}
 			| tFCT_PRINTF tPO tQUOTEDOUBLE tID tQUOTEDOUBLE tPF { printf("printf -> %s\n", $4); };
 
-
-//	""|Param | (Param,)* 
 Params:		Param tVIRGULE Params
 			| Param;
 
-Param:	_ tID _	{
-					printf("Param %s ",$2);
-					ErrorSymbolTab err = ts_push(symbolTable, $2, type_tmp); 
+Param: tID 	{
+				printf("Param %s ",$1);
+				ErrorSymbolTab err = ts_push(symbolTable, $1, type_tmp); 
 
-					// handlle error after pushed
-					switch(err)	{
-						case st_success: break; 
-						case st_full: printf(">> symtab full << "); break;
-						case st_existed: printf(">> existed symbol << "); break;
-						default: printf(">> cas not handled <<");
-					}
-				};
-
-// (Carac MiseEnPage)* 
-_:	Caractere_MiseEnPage _ 
-			|;
-
-Caractere_MiseEnPage: tTAB
-			| tCOMMENT_S
-			| tCOMMENT_C 
-			| tSPACE 
-			| tFIN_L;
+				// handlle error after pushed
+				switch(err)	{
+					case st_success: break; 
+					case st_full: printf(">> symtab full << "); break;
+					case st_existed: printf(">> existed symbol << "); break;
+					default: printf(">> cas not handled <<");
+				}
+			};
 
 // Gestion de typage
 Type:		tINT 
