@@ -1,5 +1,12 @@
 #include "symbol.h"
 
+/**
+ * Create a new symbol by associating his name with his address
+ * @param symstr : 	variable name ("tmp" for temporary name)
+ * @param type : 	see TypeSymbol
+ * @param adr :		address assigment from symtab
+ * @return new symbol
+ */
 Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr)	{
 	Symbol * sym = malloc(sizeof(Symbol));
 	sym->symbol = malloc(strlen(symstr));
@@ -14,6 +21,11 @@ Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr)	{
 	return sym;
 }
 
+/**
+ * Return size defined by its type. This function provides an abstract approach
+ * @param symbol
+ * @return its size in octets
+ */
 int s_size(Symbol* symbol)	{
 	switch(symbol->type)	{
 		case s_int: 	return 16;
@@ -23,16 +35,29 @@ int s_size(Symbol* symbol)	{
 	}
 }
 
-int s_delete(Symbol* symbol)	{
+/**
+ * Free and clean the given symbol, associate NULL to the pointer
+ * @param symbol
+ */
+void s_delete(Symbol* symbol)	{
 	free(symbol->symbol);
 	free(symbol);
 	symbol = NULL;
 }
 
+/**
+ * Print the symbol in json format
+ * @param symbol
+ */
 void s_print(Symbol * symbol)	{
 	printf("{ symbol = %s, depth = %d, type = %s, adr = %d}", symbol->symbol, symbol->depth, typeToString(symbol->type), symbol->adr);
 }
 
+/**
+ * Convert variable type in string
+ * @param type
+ * @return string
+ */
 char * typeToString(TypeSymbol type)	{
 	switch(type)	{
 		case s_int:
@@ -48,6 +73,13 @@ char * typeToString(TypeSymbol type)	{
 	}
 }
 
+/**
+ * Check if symbol has the identified name and depth
+ * @param symbol
+ * @param new_symbol
+ * @param depth
+ * @return 1 if true, else 0
+ */
 int s_equals(Symbol * symbol, char * new_symbol, int depth) {
 	if (strcmp(symbol->symbol, new_symbol) == 0 && (depth < 0 || symbol->depth == depth))
 		return 1;

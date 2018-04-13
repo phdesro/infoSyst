@@ -11,20 +11,46 @@ typedef struct {
 	TypeSymbol	type;
 } Symbol;
 
-// Init un nouveau symbol à partir de son id 
+/**
+ * Create a new symbol by associating his name with his address
+ * @param symstr : 	variable name ("tmp" for temporary name)
+ * @param type : 	see TypeSymbol
+ * @param adr :		address assigment from symtab
+ * @return new symbol
+ */
 Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr);
 
-// Get size
+/**
+ * Return size defined by its type. This function provides an abstract approach
+ * @param symbol
+ * @return its size in octets
+ */
 int s_size(Symbol* symbol);
 
-// Delete contenu du symbol
-int s_delete(Symbol* symbol);
+/**
+ * Free and clean the given symbol, associate NULL to the pointer
+ * @param symbol
+ */
+void s_delete(Symbol* symbol);
 
-// Afficher le symbol
+/**
+ * Print the symbol in json format
+ * @param symbol
+ */
 void s_print(Symbol * symbol);
 
-// Traduire le type enum en chaine de charactere
+/**
+ * Convert variable type in string
+ * @param type
+ * @return string
+ */
 char * typeToString(TypeSymbol type);
 
-// Check if equals return 1, else return 0
+/**
+ * Check if symbol has the identified name and depth
+ * @param symbol
+ * @param new_symbol
+ * @param depth
+ * @return 1 if true, else 0
+ */
 int s_equals(Symbol * symbol, char * new_symbol, int depth);
