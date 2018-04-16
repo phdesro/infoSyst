@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "opcode.h"
 
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
+
+#define I_NO_PARAM -1
+#define I_ADR_UNFILLED -2
 
 typedef struct {
 	OpCode 	operation;
@@ -12,11 +16,19 @@ typedef struct {
 	int		param[3];
 } Instruction;
 
-Instruction * new_Instruction1(OpCode operation, int param1);
-Instruction * new_Instruction2(OpCode operation, int param1, int param2);
-Instruction * new_Instruction3(OpCode operation, int param1, int param2, int param3);
+/**
+ * Instancy a new instruction, parameter value will be detected itself
+ * @param operation
+ * @param  int[1-3]
+ * @return new instruction
+ */
+Instruction * new_Instruction(OpCode operation, ...);
 
+/**
+ * Print instruction
+ * @param instruction
+ */
 void i_print(Instruction * instruction);
 
-#endif
 
+#endif

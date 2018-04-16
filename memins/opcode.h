@@ -29,7 +29,19 @@ typedef enum {
 
 } OpCode;
 
+/**
+ * Convert OpCode into a litteral asm string
+ * @param op
+ * @return string
+ */
 char * op_string(OpCode op);
+
+/**
+ * Get the number arguments needed following the OpCode
+ * @param op
+ * @return int
+ */
+int op_args(OpCode op);
 
 #endif
 

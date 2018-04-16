@@ -1,5 +1,10 @@
 #include "opcode.h"
 
+/**
+ * Convert OpCode into a litteral asm string
+ * @param op
+ * @return string
+ */
 char * op_string(OpCode op) {
 	switch(op) {
 	case op_add:	return "ADD";
@@ -20,4 +25,23 @@ char * op_string(OpCode op) {
 	default:
 		return "###unknown###";
 	}
+}
+
+/**
+ * Get the number arguments needed following the OpCode
+ * @param op
+ * @return int
+ */
+int op_args(OpCode op) {
+	switch(op) {
+		case op_add: case op_sub: case op_mul: case op_div: case op_equ: case op_inf : case op_infe: case op_sup: case op_supe:
+			return 3;
+		case op_cop: case op_afc: case op_load: case op_store: case op_jmpc:
+			return 2;
+		case op_jmp:
+			return 1;
+		default:
+			return -1;
+	}
+
 }

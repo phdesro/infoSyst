@@ -11,13 +11,13 @@ int main()	{
 	mi_print(mem);
 
 	printf("\nPush op_add =======================\n");	
-	mi_push(mem,new_Instruction3(op_add, 0, 0 ,1));
+	mi_push(mem,new_Instruction(op_add, 0, 0 ,1));
 	mi_print(mem);
 
 
 	printf("\nPush op_afc 3, push op_store =======================\n");	
-	mi_push(mem, new_Instruction2(op_afc, 0, 3));
-	mi_push(mem, new_Instruction2(op_store, -2, 2));
+	mi_push(mem, new_Instruction(op_afc, 0, 3));
+	mi_push(mem, new_Instruction(op_store, 2, 2));
 	mi_print(mem);
 	
 /*

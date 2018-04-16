@@ -15,30 +15,52 @@ typedef enum {st_success, st_full, st_existed} ErrorSymbolTab;
 // Constructor
 SymbolTab * new_SymbolTab();
 
-// get last memorized address 
+/**
+ * Get last memorized address
+ * @param tab
+ * @return
+ */
 int ts_peek(SymbolTab * tab);
 
-// pop last memorized address 
+/**
+ * Pop last memorized address, the last element will be deleted and index will be updated
+ * @param tab
+ * @return last address
+ */
 int ts_pop(SymbolTab * tab);
 
 /**
  * push new symbol to tab
- * @return : 0 if success, 1 if already exist, 0 if full table
+ * @return : enum ErrorSymbolTab (st_success, st_full, st_existed)
  */
 ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type);
 
-// pop the last symbol from tab, return the popped symbol
+/**
+ * Pop the last symbol from tab
+ * @param tab
+ * @return the last symbol
+ */
 Symbol * ts_popSymbol(SymbolTab * tab);
 
-// print out the tab with format json
+/**
+ * Print out the tab with JSON format
+ * @param tab
+ */
 void ts_print(SymbolTab * tab);
 
-// @param: symbol_table{SymbolTab * }, variable_name {str}, depth {int}
-// @return: 1 existing
-//			0 inexisting
+/**
+ * Check if symbol within depth exists already in table
+ * @param tab
+ * @param symstr
+ * @param depth
+ * @return 1 existing, 0 inexisting
+ */
 int ts_exists(SymbolTab * tab, char * symstr, int depth);
 
-// @param: symbol_table{SymbolTab * }, variable_name {str}
-// @return: return a positive of closest symbol in SymbolTab that has the highest existing depth.
-//			-1 in case not found
+/**
+ * Get addess of the closest symbol in SymbolTab that has the highest existing depth
+ * @param tab
+ * @param symstr
+ * @return > 0 if found, else -1
+ */
 int ts_getAdr(SymbolTab * tab, char * symstr);

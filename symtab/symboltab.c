@@ -9,10 +9,20 @@ SymbolTab * new_SymbolTab() {
 	}
 }
 
+/**
+ * Get last memorized address
+ * @param tab
+ * @return
+ */
 int ts_peek(SymbolTab * tab)	{
 	return tab->last_adr;
 }
 
+/**
+ * Pop last memorized address, the last element will be deleted and index will be updated
+ * @param tab
+ * @return last address
+ */
 int ts_pop(SymbolTab * tab)	{
 	int last_adr = ts_peek(tab);
 	Symbol * sym = ts_popSymbol(tab);	
@@ -20,6 +30,10 @@ int ts_pop(SymbolTab * tab)	{
 	return last_adr;
 }
 
+/**
+ * push new symbol to tab
+ * @return : 0 if success, else check the enum ErrorSymbolTab
+ */
 ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type)	{
 
 	if(tab->index > TABMAX - 2)	{
@@ -43,6 +57,11 @@ ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type)	{
 	return st_success;
 }
 
+/**
+ * Pop the last symbol from tab
+ * @param tab
+ * @return the last symbol
+ */
 Symbol * ts_popSymbol(SymbolTab * tab)	{
 
 	if(tab->index < 0)	{
@@ -57,6 +76,10 @@ Symbol * ts_popSymbol(SymbolTab * tab)	{
 	return symbol;
 }
 
+/**
+ * Print out the tab with JSON format
+ * @param tab
+ */
 void ts_print(SymbolTab * tab) {
 
 	printf("Symbol Tab : {\n");
@@ -76,6 +99,13 @@ void ts_print(SymbolTab * tab) {
 	printf("}\n");
 }
 
+/**
+ * Check if symbol within depth exists already in table
+ * @param tab
+ * @param symstr
+ * @param depth
+ * @return 1 existing, 0 inexisting
+ */
 int ts_exists(SymbolTab * tab, char * symstr, int depth) {
 	if(tab->index == -1)
 		return 0;
@@ -88,9 +118,12 @@ int ts_exists(SymbolTab * tab, char * symstr, int depth) {
 	return 0;
 }
 
-// @param: symbol_table{SymbolTab * }, nom_de_variable {str}
-// @return: return a positive of closest symbol in SymbolTab that has the highest existing depth.
-//			-1 in case not found
+/**
+ * Get addess of the closest symbol in SymbolTab that has the highest existing depth
+ * @param tab
+ * @param symstr
+ * @return > 0 if found, else -1
+ */
 int ts_getAdr(SymbolTab * tab, char * symstr)	{
 	if(tab->index < 0)	{
 		return -1;	
