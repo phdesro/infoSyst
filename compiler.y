@@ -1,7 +1,6 @@
 %code requires {
 	#include <stdio.h>
-	#include "symtab/symboltab.h"
-	#include "memins/meminstr.h"
+	#include "util/util.h"
 }
 
 %union { 
@@ -36,9 +35,11 @@
 %type <str> tID
 %type <nb> tNB
 %type <lxType> Type tINT tFLOAT tCHAR tVOID
-%type <lxOp> tCOND
 %type <lxOp> tEQU tSUP tSUPEQU tINF tINFEQU tDIF
 %type <lxOp> tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
+
+%nonassoc tIFX
+%nonassoc tELSE
 
 %%
 
@@ -67,30 +68,24 @@ If:			tIF Condition_stmt Instruction Else { printf("if_fin\n");}
 			| tIF Condition_stmt tAO Body_line tAF Else { printf("if_fin\n");};
 											
 
-Else:		tELSE Instruction 		{ printf("else_fin\n");}
+Else:		tELSE Instruction 		    { printf("else_fin\n");}
 			| tELSE tAO Body_line tAF	{ printf("else_fin\n");}
-			| ;
+			| %prec tIFX;
 
-While:		tWHILE Condition_stmt Instruction { printf("while_fin\n");}
-			| tWHILE Condition_stmt tAO Body_line tAF { printf("while_fin\n");}
-			| tWHILE Condition_stmt tFIN_I { printf("[warning] empty while\n");};
+While:		tWHILE Condition_stmt Instruction           { printf("while_fin\n");}
+			| tWHILE Condition_stmt tAO Body_line tAF   { printf("while_fin\n");}
+			| tWHILE Condition_stmt tFIN_I              { printf("[warning] empty while\n");};
 											
 
 Condition_stmt: tPO Condition tPF;
 
-Condition:	Condition tCOND Condition 	{ 
-											mi_push(memInst, new_Instruction2(op_load, 0, ts_pop(symbolTable)));
-											mi_push(memInst, new_Instruction2(op_load, 1, ts_pop(symbolTable)));
-											mi_push(memInst, new_Instruction3($2, 0, 0, 1));
-										}
+Condition:	Condition tEQU Condition 	    {   util_cond(symbolTable, memInst, $2); }
+			| Condition tSUP Condition 	    {   util_cond(symbolTable, memInst, $2); }
+			| Condition tSUPEQU Condition 	{   util_cond(symbolTable, memInst, $2); }
+			| Condition tINF Condition 	    {   util_cond(symbolTable, memInst, $2); }
+			| Condition tINFEQU Condition 	{   util_cond(symbolTable, memInst, $2); }
+			| Condition tDIF Condition 	    {   util_cond(symbolTable, memInst, $2); }
 			| Expression ;
-
-tCOND: 		tEQU { $$ = $1; }
-			| tSUP
-			| tSUPEQU
-			| tINF
-			| tINFEQU
-			| tDIF;
 
 /*-------------- Instructions --------------*/
 
@@ -103,8 +98,8 @@ Affectation: tID tOPEQU Expression tFIN_I	{
 													printf("\n\n[error] %s undeclared\n\n", $1); 
 												}
 												else {
-													printf("LOAD 0 %d\n", ts_pop(symbolTable));
-													printf("STORE %d 0\n", existing_adr);
+													mi_push(memInst, new_Instruction2(op_load, 0, ts_pop(symbolTable)));
+													mi_push(memInst, new_Instruction2(op_store, existing_adr, 0));
 												}
 											};
 
@@ -114,46 +109,20 @@ Expression:	tID								{
 												if(existing_adr < 0) { 
 													printf("\n\n[error] %s undeclared\n\n", $1);
 												} else {
-													printf("LOAD 0 %d \n", existing_adr);
-													printf("STORE %d 0 \n", ts_peek(symbolTable)); 
+													mi_push(memInst, new_Instruction2(op_load, 0, ts_pop(symbolTable)));
+													mi_push(memInst, new_Instruction2(op_store, 0, ts_peek(symbolTable)));
 												}
 											}
 			| tNB							{ 
 												ts_push(symbolTable, "tmp", s_int); 
-												printf("AFC 0 %d\n",$1); 
-												printf("STORE %d 0\n", ts_peek(symbolTable)); 
+												mi_push(memInst, new_Instruction2(op_afc, 0, $1));
+												mi_push(memInst, new_Instruction2(op_store, ts_peek(symbolTable), 0));
 											}
-			| Expression tOPMUL Expression 	{ 	
-												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-												printf("MUL 0 1 0 \n");
-												printf("STORE %d 0 \n", ts_peek(symbolTable));
-											}
-			| Expression tOPDIV Expression	{ 	
-												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-												printf("DIV 0 1 0 \n");
-												printf("STORE %d 0 \n", ts_peek(symbolTable));
-											}
-			| Expression tOPADD Expression	{ 	
-												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-												printf("ADD 0 1 0 \n");
-												printf("STORE %d 0 \n", ts_peek(symbolTable));
-											}
-			| Expression tOPSUB Expression	{ 	
-												printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-												printf("LOAD 1 %d \n", ts_peek(symbolTable)); 
-												printf("SUB 0 1 0 \n");
-												printf("STORE %d 0 \n", ts_peek(symbolTable));
-											}
+			| Expression tOPADD Expression 	{   util_op(symbolTable, memInst, $2);  }
+			| Expression tOPSUB Expression 	{   util_op(symbolTable, memInst, $2);  }
+			| Expression tOPDIV Expression 	{   util_op(symbolTable, memInst, $2);  }
+			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| tPO Expression tPF ;
-
-/*
-tOP: 		tOPADD
-			| tOPSUB
-			| tOPDIV
-			| tOPMUL {$$=$1};*/
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
