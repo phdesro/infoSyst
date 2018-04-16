@@ -1,12 +1,14 @@
 %code requires {
 	#include <stdio.h>
 	#include "symtab/symboltab.h"
+	#include "memins/meminstr.h"
 }
 
 %union { 
 	char str[80]; 
 	int nb; 
 	TypeSymbol lxType;
+	OpCode lxOp;
 }
 
 %left tEQU tDIF
@@ -21,6 +23,7 @@
 
 	TypeSymbol type_tmp;
 	SymbolTab * symbolTable;
+	MemoireInstr * memInst;
 %}
 
 %token tID tNB tFCT_MAIN tFCT_PRINTF
@@ -30,9 +33,12 @@
 %token tEQU tSUP tSUPEQU tINF tINFEQU tDIF
 %token tIF tELSE tWHILE 
 
-%type <str> tID tCOND tEQU tSUP tSUPEQU tINF tINFEQU tDIF
+%type <str> tID
 %type <nb> tNB
 %type <lxType> Type tINT tFLOAT tCHAR tVOID
+%type <lxOp> tCOND
+%type <lxOp> tEQU tSUP tSUPEQU tINF tINFEQU tDIF
+%type <lxOp> tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
 
 %%
 
@@ -73,13 +79,13 @@ While:		tWHILE Condition_stmt Instruction { printf("while_fin\n");}
 Condition_stmt: tPO Condition tPF;
 
 Condition:	Condition tCOND Condition 	{ 
-											printf("LOAD 0 %d \n", ts_pop(symbolTable)); 
-											printf("LOAD 1 %d \n", ts_pop(symbolTable)); 
-											printf("%s 0 0 1\n", $2); 
+											mi_push(memInst, new_Instruction2(op_load, 0, ts_pop(symbolTable)));
+											mi_push(memInst, new_Instruction2(op_load, 1, ts_pop(symbolTable)));
+											mi_push(memInst, new_Instruction3($2, 0, 0, 1));
 										}
 			| Expression ;
 
-tCOND: 		tEQU { strcpy($$,$1); }
+tCOND: 		tEQU { $$ = $1; }
 			| tSUP
 			| tSUPEQU
 			| tINF
@@ -143,6 +149,12 @@ Expression:	tID								{
 											}
 			| tPO Expression tPF ;
 
+/*
+tOP: 		tOPADD
+			| tOPSUB
+			| tOPDIV
+			| tOPMUL {$$=$1};*/
+
 /*-------------- Functions specifiques --------------*/
 Call_function:
 	Printf tFIN_I; 
@@ -173,10 +185,17 @@ Type:		tINT
 			| tFLOAT { $$ = $1; };
 %%
 
-int main(void) {
+void init() {
+	printf("init");
 	symbolTable = new_SymbolTab();
-	//init();
+	memInst = new_MemoireInstr();
+}
+
+int main(void) {
+	
+	init();
 	
 	yyparse();
-	ts_print(symbolTable);
+	//ts_print(symbolTable);
+	mi_print(memInst);
 }

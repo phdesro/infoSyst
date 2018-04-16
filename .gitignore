@@ -5,3 +5,4 @@ flex
 *.o
 symboltest
 .idea
+memins/mitest

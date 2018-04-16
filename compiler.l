@@ -26,12 +26,12 @@ void		{	yylval.lxType = s_void;		return tVOID; 	}
 %{
 /* conditions */
 %}
-"=="		{	strcpy(yylval.str, "EQU"); return tEQU;		}
-">"			{	strcpy(yylval.str, "SUP"); return tSUP; 		}
-">="		{	strcpy(yylval.str, "SUPE"); return tSUPEQU; 	}
-"<"			{	strcpy(yylval.str, "INF"); return tINF;		}
-"<="		{	strcpy(yylval.str, "INFE"); return tINFEQU;		}
-"!="		{	strcpy(yylval.str, "DIF"); return tDIF;		}
+"=="		{	yylval.lxOp = op_equ; 	return tEQU;		}
+">"			{	yylval.lxOp = op_sup; 	return tSUP; 		}
+">="		{	yylval.lxOp = op_supe; 	return tSUPEQU; 	}
+"<"			{	yylval.lxOp = op_inf; 	return tINF;		}
+"<="		{	yylval.lxOp = op_infe; 	return tINFEQU;		}
+"!="		{	yylval.lxOp = op_dif; 	return tDIF;		}
 
 %{
 /* conditional loops */
@@ -58,11 +58,11 @@ while		{	return 	tWHILE;	}
 %{
 /* operations */
 %}
-"+" 		{	return  tOPADD;		}
-"-" 		{	return  tOPSUB;		}
-"*" 		{	return  tOPMUL;		}
-"/" 		{	return  tOPDIV;		}
-"=" 		{	return  tOPEQU;		}
+"+" 		{	yylval.lxOp = op_add; 	return tOPADD;		}
+"-" 		{	yylval.lxOp = op_sub; 	return tOPSUB;		}
+"*" 		{	yylval.lxOp = op_equ; 	return tOPMUL;		}
+"/" 		{	yylval.lxOp = op_equ; 	return tOPDIV;		}
+"=" 		{	yylval.lxOp = op_equ; 	return tOPEQU;		}
 
 %{
 /* basic functions */

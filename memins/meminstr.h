@@ -1,20 +1,25 @@
 #include "instruction.h"
-#include "opcode.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+	Instruction * instruction;
+	struct Node * next;
+} Node;
 
 typedef struct  {
     Node * first;
     Node * last;
 } MemoireInstr;
 
-typedef struct {
-	Instruction * instruction;
-	Node * next;
-} Node;
-
-MemoireInstr * new_MemmoireInstr();
+MemoireInstr * new_MemoireInstr();
 
 void mi_push(MemoireInstr * mem, Instruction * instruction);
 
-void print(MemoireInstr * mem);
+void mi_print(MemoireInstr * mem);
 
-//
+// private
+
+Node * new_Node();
+
