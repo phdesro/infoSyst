@@ -1,5 +1,7 @@
 %code requires {
 	#include <stdio.h>
+
+	#include "memins/opcode.h"
 	#include "util/util.h"
 }
 
@@ -64,20 +66,34 @@ Main: 		tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_f
 
 /*-------------- Syntaxes conditionnelles --------------*/
 
-If:			tIF Condition_stmt Instruction Else { printf("if_fin\n");}
-			| tIF Condition_stmt tAO Body_line tAF Else { printf("if_fin\n");};
+If:			tIF Condition_stmt If_Block Else;
+
+If_Block: 	Instruction
+			| tAO Body_line tAF { 	
+									mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0)); 
+								};
 											
 
-Else:		tELSE Instruction 		    { printf("else_fin\n");}
-			| tELSE tAO Body_line tAF	{ printf("else_fin\n");}
-			| %prec tIFX;
+Else:		tELSE 	{
+						mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0)); 
+						mi_fill_jump(memInst, memInst->last_address, 1);  
+					} Else_Block {
+								 	mi_fill_jump(memInst, memInst->last_address, 0);
+								 }
+
+			| %prec tIFX	{
+							 	mi_fill_jump(memInst, memInst->last_address, 0);
+							};
+
+Else_Block:	Instruction
+			| tAO Body_line tAF;
 
 While:		tWHILE Condition_stmt Instruction           { printf("while_fin\n");}
 			| tWHILE Condition_stmt tAO Body_line tAF   { printf("while_fin\n");}
 			| tWHILE Condition_stmt tFIN_I              { printf("[warning] empty while\n");};
 											
 
-Condition_stmt: tPO Condition tPF;
+Condition_stmt: tPO Condition tPF { mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));/* wait @ of Else */ };
 
 Condition:	Condition tEQU Condition 	    {   util_cond(symbolTable, memInst, $2); }
 			| Condition tSUP Condition 	    {   util_cond(symbolTable, memInst, $2); }
@@ -98,8 +114,8 @@ Affectation: tID tOPEQU Expression tFIN_I	{
 													printf("\n\n[error] %s undeclared\n\n", $1); 
 												}
 												else {
-													mi_push(memInst, new_Instruction2(op_load, 0, ts_pop(symbolTable)));
-													mi_push(memInst, new_Instruction2(op_store, existing_adr, 0));
+													mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+													mi_push(memInst, new_Instruction(op_store, existing_adr, 0));
 												}
 											};
 
@@ -109,14 +125,14 @@ Expression:	tID								{
 												if(existing_adr < 0) { 
 													printf("\n\n[error] %s undeclared\n\n", $1);
 												} else {
-													mi_push(memInst, new_Instruction2(op_load, 0, ts_pop(symbolTable)));
-													mi_push(memInst, new_Instruction2(op_store, 0, ts_peek(symbolTable)));
+													mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+													mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
 												}
 											}
 			| tNB							{ 
 												ts_push(symbolTable, "tmp", s_int); 
-												mi_push(memInst, new_Instruction2(op_afc, 0, $1));
-												mi_push(memInst, new_Instruction2(op_store, ts_peek(symbolTable), 0));
+												mi_push(memInst, new_Instruction(op_afc, 0, $1));
+												mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
 											}
 			| Expression tOPADD Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPSUB Expression 	{   util_op(symbolTable, memInst, $2);  }

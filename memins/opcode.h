@@ -29,6 +29,9 @@ typedef enum {
 
 } OpCode;
 
+#define I_NO_PARAM -1
+#define I_ADR_UNFILLED -2
+
 /**
  * Convert OpCode into a litteral asm string
  * @param op

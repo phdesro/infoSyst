@@ -7,9 +7,6 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-#define I_NO_PARAM -1
-#define I_ADR_UNFILLED -2
-
 typedef struct {
 	OpCode 	operation;
 	int		address;
@@ -30,5 +27,13 @@ Instruction * new_Instruction(OpCode operation, ...);
  */
 void i_print(Instruction * instruction);
 
+/**
+ * Check if instruction is a waiting jump to be filled
+ * @param instruction
+ * @return true/false
+ */
+int i_isWaitingJump(Instruction * instruction);
+
+void i_setAddress(Instruction * instruction, int address);
 
 #endif

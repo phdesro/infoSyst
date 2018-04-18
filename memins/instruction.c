@@ -47,3 +47,16 @@ void i_print(Instruction * ins) {
 
 	printf(" }\n");
 }
+
+/**
+ * Check if instruction is a waiting jump to be filled
+ * @param instruction
+ * @return true/false
+ */
+int i_isWaitingJump(Instruction * instruction) {
+	return instruction->operation == op_jmpc && instruction->param[1] == I_ADR_UNFILLED;
+}
+
+void i_setAddress(Instruction * instruction, int address) {
+	instruction->param[1] = address;
+}

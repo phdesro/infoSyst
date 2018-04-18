@@ -13,13 +13,33 @@ typedef struct Node {
 
 Node * new_Node();
 
+/**
+ * Get node(index) in linked list of index
+ * @param node
+ * @param index >= 0
+ * @return Node *
+ */
+Node * n_get(Node * node, int index);	// TODO: Should we get and remove the node right away?
+
+//Node * n_remove(Node * node, int index);
+
 // ================ public ================ //
 
 typedef struct  {
-    Node * first;
-    Node * last;
-    Node * jump;
-    int last_address;
+
+    Node * first;		// first instruction node in table
+    Node * last;		// last instruction node in table
+
+    Node * first_jump;		// first jump in waiting filled jump list (jump list)
+	Node * last_jump;		// last jump in jump list
+
+    int last_address;	// address of the lastest instruction (aka. in last)
+
+	// structure is like the following:
+	// MemoireInstr
+	//	| first (node) -> node -> node -> ... -> last
+	//	| first jump (node) -> node (uncompleted jump) -> node -> ... -> last jump
+	//	| last address
 } MemoireInstr;
 
 MemoireInstr * new_MemoireInstr();
@@ -36,3 +56,11 @@ void mi_push(MemoireInstr * mem, Instruction * instruction);
  * @param mem
  */
 void mi_print(MemoireInstr * mem);
+
+/**
+ * Fill the current address to jump
+ * @param mem
+ * @param address
+ * @param move_cursor
+ */
+void mi_fill_jump(MemoireInstr * mem, int address, int distance);	// TODO do we need to pass address in param?
