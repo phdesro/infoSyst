@@ -67,6 +67,6 @@ void mi_print(MemoireInstr * mem);
  * @param address
  * @param move_cursor
  */
-void mi_fill_jump(MemoireInstr * mem, int distance);	// TODO do we need to pass address in param?
+void mi_fill_jump(MemoireInstr * mem, int distance);
 
 #endif

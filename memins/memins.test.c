@@ -19,6 +19,19 @@ void basic_test(MemoireInstr * mem)	{
 }
 
 void if_test(MemoireInstr * mem) {
+
+	printf("\nPush jump for if, then op mul =======================\n");
+	mi_push(mem, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
+	mi_push(mem,new_Instruction(op_mul, 0, 0 ,1));
+
+	printf("\nFill the jump and continue the instructions =======================\n");
+	mi_fill_jump(mem, 0);
+	mi_push(mem,new_Instruction(op_add, 0, 0 ,1));
+
+	mi_print(mem);
+}
+
+void if_else_test(MemoireInstr * mem) {
 	printf("\nPush first jump for if, then op mul =======================\n");
 	mi_push(mem, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
 	mi_push(mem,new_Instruction(op_mul, 0, 0 ,1));
@@ -38,7 +51,6 @@ void if_test(MemoireInstr * mem) {
 	mi_push(mem,new_Instruction(op_add, 0, 0 ,1));
 	mi_fill_jump(mem, 0);
 	mi_print(mem);
-
 }
 
 int main()	{
@@ -47,7 +59,9 @@ int main()	{
 
 	MemoireInstr * mem = new_MemoireInstr();
 
-	// basic_test(mem);
+	basic_test(mem);
+
+	if_else_test(mem);
 
 	if_test(mem);
 

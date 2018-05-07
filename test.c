@@ -1,4 +1,4 @@
-main(a)   {
+int main(arg)   {
 	//int i, j,k ,r;
 	int i;
 		
@@ -27,7 +27,17 @@ main(a)   {
 	r=(i+j)*(i+k/j) ;
 	*/
 
-	//if(i>= 0); // problem if here
+	/* ---- test asm if ----
+	if(i>= 0)
 		i=3;
+	else
+		i = 5;
+	i = i + 1;
+ 	*/
 
+	/* ---- test asm while ---- */
+
+	while(i < 5) {
+		i = i + 1;
+	}
 }

@@ -23,6 +23,8 @@
 	void yyerror(char*);
 
 	TypeSymbol type_tmp;
+	int while_adr_tmp;
+
 	SymbolTab * symbolTable;
 	MemoireInstr * memInst;
 %}
@@ -61,12 +63,14 @@ Instruction: Call_function
 			| If
 			| While;
 
-Main: 		tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_fin\n");}
-			| tFCT_MAIN tPO tPF Function_body { printf("main_fin\n");};
+Main: 		tINT tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("main_fin\n");}
+			| tINT tFCT_MAIN tPO tPF Function_body { printf("main_fin\n");};
 
 /*-------------- Syntaxes conditionnelles --------------*/
 
-If:			tIF Condition_stmt If_Block Else;
+If:			tIF Condition_stmt  {
+                                    mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));/* wait @ of Else */
+                                } If_Block Else;
 
 If_Block: 	Instruction
 			| tAO Body_line tAF { 	
@@ -75,25 +79,34 @@ If_Block: 	Instruction
 											
 
 Else:		tELSE 	{
-						mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0)); 
-						mi_fill_jump(memInst, memInst->last_address, 1);  
+						mi_push(memInst, new_Instruction(op_jmp, I_ADR_UNFILLED));
+						mi_fill_jump(memInst, 1);
 					} Else_Block {
-								 	mi_fill_jump(memInst, memInst->last_address, 0);
+								 	mi_fill_jump(memInst, 0);
 								 }
 
 			| %prec tIFX	{
-							 	mi_fill_jump(memInst, memInst->last_address, 0);
+							 	mi_fill_jump(memInst, 0);
 							};
 
 Else_Block:	Instruction
 			| tAO Body_line tAF;
 
-While:		tWHILE Condition_stmt Instruction           { printf("while_fin\n");}
-			| tWHILE Condition_stmt tAO Body_line tAF   { printf("while_fin\n");}
-			| tWHILE Condition_stmt tFIN_I              { printf("[warning] empty while\n");};
-											
+While: tWHILE Condition_stmt    {
+                                    mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
+                                    while_adr_tmp = memInst->last_address;
 
-Condition_stmt: tPO Condition tPF { mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));/* wait @ of Else */ };
+                                }   While_Block {
+                                                    mi_fill_jump(memInst, 0);
+                                                    mi_push(memInst, new_Instruction(op_jmp, while_adr_tmp, 0));
+                                                    while_adr_tmp = -1000; // free tmp adr
+                                                };
+
+While_Block: Instruction
+            | tAO Body_line tAF
+            | tFIN_I;
+
+Condition_stmt: tPO Condition tPF;
 
 Condition:	Condition tEQU Condition 	    {   util_cond(symbolTable, memInst, $2); }
 			| Condition tSUP Condition 	    {   util_cond(symbolTable, memInst, $2); }
@@ -106,7 +119,7 @@ Condition:	Condition tEQU Condition 	    {   util_cond(symbolTable, memInst, $2)
 /*-------------- Instructions --------------*/
 
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
-Declaration: Type { type_tmp = $1; } Params tFIN_I {  };
+Declaration: Type { type_tmp = $1; } Params tFIN_I;
 
 Affectation: tID tOPEQU Expression tFIN_I	{	
 												int existing_adr = ts_getAdr(symbolTable, $1);

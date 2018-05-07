@@ -20,6 +20,7 @@ Instruction * new_Instruction(OpCode operation, ...) {
 	instr->param[0] = va_arg(args, int);
 	instr->param[1] = nbargs < 2 ? -1 : va_arg(args, int);
 	instr->param[2] = nbargs < 3 ? -1 : va_arg(args, int);
+
 	if(nbargs > 3)	{
 		printf("error %d arguments dans new_Instruction()", nbargs);
 		exit(1);
