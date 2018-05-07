@@ -136,30 +136,3 @@ int ts_getAdr(SymbolTab * tab, char * symstr)	{
 	}
 	return -1;
 }
-
-
-/*
-int main()	{
-	
-	printf("========================== test symbol tab ============================\n");		
-
-	SymbolTab * tab = new_SymbolTab();
-	printf("\nEmpty table =======================\n");	
-	printSymbolTab(tab);
-
-	printf("\nPush symbol_1 =======================\n");	
-	ts_push(tab,"symbol_1");
-	ts_print(tab);
-
-	printf("\nPush symbol_2, push symbol_3, pop =======================\n");	
-	ts_push(tab,"symbol_2");
-	ts_push(tab,"symbol_3");
-	ts_pop(tab);	
-	printSymbolTab(tab);
-
-	printf("\nPush symbol_2 =======================\n");	
-	ts_push(tab,"symbol_2");
-	ts_print(tab);
-
-	return 0;
-}*/

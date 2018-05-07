@@ -24,6 +24,7 @@ Instruction * new_Instruction(OpCode operation, ...);
 /**
  * Print instruction
  * @param instruction
+ * @param prefix "\t"
  */
 void i_print(Instruction * instruction);
 

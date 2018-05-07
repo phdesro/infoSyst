@@ -27,7 +27,7 @@ main(a)   {
 	r=(i+j)*(i+k/j) ;
 	*/
 
-	if(i>= 0)
+	//if(i>= 0); // problem if here
 		i=3;
 
 }

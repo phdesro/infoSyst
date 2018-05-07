@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef SYMBOL_H
+#define SYMBOL_H
+
 typedef enum {s_int, s_float, s_char, s_void} TypeSymbol;
 
 typedef struct {
@@ -54,3 +57,5 @@ char * typeToString(TypeSymbol type);
  * @return 1 if true, else 0
  */
 int s_equals(Symbol * symbol, char * new_symbol, int depth);
+
+#endif

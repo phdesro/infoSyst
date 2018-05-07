@@ -1,3 +1,7 @@
+CC := gcc
+DIR_SYMTAB := symtab
+DIR_MEMINS := memins
+
 all: compiler
 
 lex.yy.c: compiler.l
@@ -6,17 +10,26 @@ lex.yy.c: compiler.l
 compiler.tab.c: compiler.y
 	~/bison/bin/bison -d -v compiler.y
 
-compiler: compiler.tab.c lex.yy.c symtab/symbol.c symtab/symboltab.c memins/instruction.c memins/meminstr.c memins/mitest.c memins/opcode.c util/util.c
-	gcc -o compiler lex.yy.c compiler.tab.c symtab/symbol.c symtab/symboltab.c memins/opcode.c util/util.c memins/instruction.c memins/meminstr.c libfl.a ~/bison/lib/liby.a
+compiler: compiler.tab.c lex.yy.c symtab/symbol.c symtab/symboltab.c memins/instruction.c memins/meminstr.c memins/opcode.c util/util.c
+	$(CC) -o compiler lex.yy.c compiler.tab.c symtab/symbol.c symtab/symboltab.c memins/opcode.c util/util.c memins/instruction.c memins/meminstr.c libfl.a ~/bison/lib/liby.a
 
 test: compiler
 	./compiler < test.c
 
-testsymbol: symtab/symbol.c symtab/symboltab.c 
-	gcc symtab/symbol.c symtab/symboltab.c -o symtab/symtest
-	symtab/symboltest
+test.symtab: $(DIR_SYMTAB)/symbol.c $(DIR_SYMTAB)/symboltab.c $(DIR_SYMTAB)/symtab.test.c
+	$(CC) $(DIR_SYMTAB)/symbol.c $(DIR_SYMTAB)/symboltab.c $(DIR_SYMTAB)/symtab.test.c -o $(DIR_SYMTAB)/testsymtab
+	$(DIR_SYMTAB)/testsymtab
 
-testmemoire: memins/instruction.c memins/meminstr.c memins/mitest.c memins/opcode.c
-	gcc memins/opcode.c memins/instruction.c memins/meminstr.c memins/mitest.c -o memins/mitest
-	memins/mitest
+test.memins: $(DIR_MEMINS)/instruction.c $(DIR_MEMINS)/meminstr.c $(DIR_MEMINS)/memins.test.c $(DIR_MEMINS)/opcode.c
+	$(CC) $(DIR_MEMINS)/opcode.c $(DIR_MEMINS)/instruction.c $(DIR_MEMINS)/meminstr.c $(DIR_MEMINS)/memins.test.c -o $(DIR_MEMINS)/testmemins
+	$(DIR_MEMINS)/testmemins
+
+clean:
+	rm -rf compiler compiler.output compiler.tab.* lex.yy.c
+	echo "DELETE UTEST OF SYMBOL TABLE ======"
+	rm -rf symtab/testsymtab
+	echo "DELETE UTEST OF INSTRUCTION MEMORY ======"
+	rm -rf memins/testmemins
+
+
 	

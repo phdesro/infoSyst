@@ -3,7 +3,7 @@ compiler
 lex.yy.c
 flex
 *.o
-symboltest
 .idea
-memins/mitest
 /compiler.output
+/memins/testmemins
+/symtab/testsymtab

@@ -181,6 +181,6 @@ int main(void) {
 	init();
 	
 	yyparse();
-	//ts_print(symbolTable);
+	ts_print(symbolTable);
 	mi_print(memInst);
 }

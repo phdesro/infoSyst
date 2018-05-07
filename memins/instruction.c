@@ -12,7 +12,10 @@ Instruction * new_Instruction(OpCode operation, ...) {
 
 	int nbargs = op_args(operation);
 	va_list(args);
+
+	#pragma GCC diagnostic ignored "-Wvarargs"
 	va_start(args, nbargs); // a warning here because we don't pass the nbargs in argument, but here we don't need to
+	#pragma GCC diagnostic pop
 
 	instr->param[0] = va_arg(args, int);
 	instr->param[1] = nbargs < 2 ? -1 : va_arg(args, int);
@@ -34,7 +37,7 @@ Instruction * new_Instruction(OpCode operation, ...) {
  */
 void i_print(Instruction * ins) {
 
-	printf("\t@%d: ", ins->address);
+	printf("@%d: ", ins->address);
 
 	printf("{ %s ", op_string(ins->operation));
 
@@ -54,9 +57,10 @@ void i_print(Instruction * ins) {
  * @return true/false
  */
 int i_isWaitingJump(Instruction * instruction) {
-	return instruction->operation == op_jmpc && instruction->param[1] == I_ADR_UNFILLED;
+	return (instruction->operation == op_jmpc || instruction->operation == op_jmp )
+		   && instruction->param[0] == I_ADR_UNFILLED;
 }
 
 void i_setAddress(Instruction * instruction, int address) {
-	instruction->param[1] = address;
+	instruction->param[0] = address;
 }

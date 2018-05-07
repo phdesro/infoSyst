@@ -3,6 +3,9 @@
 
 #include "instruction.h"
 
+#ifndef MEMINSTR_H
+#define MEMINSTR_H
+
 #define PADDING 4
 
 // ================ private ================ //
@@ -21,7 +24,7 @@ Node * new_Node();
  */
 Node * n_get(Node * node, int index);	// TODO: Should we get and remove the node right away?
 
-//Node * n_remove(Node * node, int index);
+void n_delete(Node * node);
 
 // ================ public ================ //
 
@@ -32,6 +35,7 @@ typedef struct  {
 
     Node * first_jump;		// first jump in waiting filled jump list (jump list)
 	Node * last_jump;		// last jump in jump list
+	int nb_jump;			// nb of jump, use when calculate the distance
 
     int last_address;	// address of the lastest instruction (aka. in last)
 
@@ -63,4 +67,6 @@ void mi_print(MemoireInstr * mem);
  * @param address
  * @param move_cursor
  */
-void mi_fill_jump(MemoireInstr * mem, int address, int distance);	// TODO do we need to pass address in param?
+void mi_fill_jump(MemoireInstr * mem, int distance);	// TODO do we need to pass address in param?
+
+#endif

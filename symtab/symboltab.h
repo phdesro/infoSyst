@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "symbol.h"
 
+#ifndef SYMBOLTAB_H
+#define SYMBOLTAB_H
+
 #define TABMAX 255
 
 typedef struct  {
@@ -64,3 +67,5 @@ int ts_exists(SymbolTab * tab, char * symstr, int depth);
  * @return > 0 if found, else -1
  */
 int ts_getAdr(SymbolTab * tab, char * symstr);
+
+#endif

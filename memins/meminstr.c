@@ -26,6 +26,11 @@ Node * n_get(Node * node, int index) {
 	return n_get(node->next, index - 1);
 }
 
+void n_delete(Node * node) {
+	free(node);
+	node = NULL;
+}
+
 // ================ public ================ //
 
 MemoireInstr * new_MemoireInstr() {
@@ -35,9 +40,10 @@ MemoireInstr * new_MemoireInstr() {
 	mem->first = NULL;
 	mem->last = NULL;
 
-	// waiting jump list
+	// jump stack
 	mem->first_jump = NULL;
 	mem->last_jump = NULL;
+	mem->nb_jump = 0;
 
 	return mem;
 }
@@ -66,10 +72,14 @@ void mi_push(MemoireInstr * mem, Instruction * instruction) {
 
 		Node * jump = new_Node(instruction);
 
+		if(mem->first_jump == NULL)
+			mem->first_jump = jump;
+
 		if(mem->last_jump != NULL)
 			mem->last_jump->next = jump;
 
 		mem->last_jump = jump;
+		mem->nb_jump++;
 	}
 
 }
@@ -77,17 +87,36 @@ void mi_push(MemoireInstr * mem, Instruction * instruction) {
 /**
  * Print memory state
  * @param mem
+ * @param prefix "\t"
  */
 void mi_print(MemoireInstr * mem) {
-	printf("Memoire Instruction : [\n");
 
+	printf("Memoire Instruction : {\n");
+
+
+	// print instruction table
+	printf("\tInstructions: [\n");
 	Node * node = mem->first;
 	while(node != NULL) {
+		printf("\t\t");
 		i_print(node->instruction);
 		node = node->next;
 	}
+	printf("\t],\n");
 
-	printf("]\n");
+
+	// print jump list
+	printf("\tJumpStack: [\n");
+	node = mem->first_jump;
+	while(node != NULL) {
+		printf("\t\t");
+		i_print(node->instruction);
+		node = node->next;
+	}
+	printf("\t]\n");
+
+
+	printf("}\n");
 }
 
 /**
@@ -96,14 +125,27 @@ void mi_print(MemoireInstr * mem) {
  * @param address
  * @param distance
  */
-void mi_fill_jump(MemoireInstr * mem, int address, int distance) {
+void mi_fill_jump(MemoireInstr * mem, int distance) {
 
 	// find jump node
-	Node * jump_node = n_get(mem->first_jump, distance);
+	int id_node = mem->nb_jump - distance - 1;
 
-	// update it
-	i_setAddress(jump_node->instruction, address);
+	Node * jump_node = n_get(mem->first_jump, id_node);
 
-	// now delete node
+	// update the instruction coressponding
+	i_setAddress(jump_node->instruction, mem->last_address + PADDING);
+
+	// delete node
+	if(jump_node == mem->first_jump)	{
+		mem->first_jump = jump_node->next;
+	}	else {
+
+		// TODO do we have this situation??
+		Node * precedence = n_get(mem->first_jump, id_node -1);
+		precedence->next = jump_node->next;
+	}
+
+	n_delete(jump_node);
+	mem->nb_jump--;
 
 }
