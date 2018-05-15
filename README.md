@@ -4,9 +4,13 @@ docs : http://homepages.laas.fr/ealata/Projet_Syst_Info_2018.pdf
 shift_left : http://en.cppreference.com/w/c/language/operator_precedence
 
 ## TODO:
-### Urgent:
+### Done
 * if/else
-* while
+* while (fix condition)
+### Bonus:
+* pointer
+* ternaire
+### Urgent:
 * function
 * express arithm
 * err de base
@@ -15,7 +19,6 @@ shift_left : http://en.cppreference.com/w/c/language/operator_precedence
 * erreur approfondi
 * jit (?)
 * typessss
-* pointeurs
 * structures
 * tableaux
 * pp
@@ -160,6 +163,55 @@ i = j + 1;
 En yacc:
 decl: tINT tID
 
+## VHDL
+```
+p_in : 5 entrées de 16 bits \\
+p_out: 5 sorties de 16 bits \\
+...
+begin
+    // synchrone sur le front montant d'horloge
+    process(clk)
+    begin
+        if (clk = '1') then
+            p_out <= p_in;
+        endif;
+    end;
+
+end;
+```
 
 
+**Attention**
+1.
+```
+process
+begin
+    b <= a;
+    c <= b;
+end;
+```
+a = 8   8   \\
+b = 10  8   \\
+c = 15  10  \\
 
+// tout s'est effectué en même temps, correspond à la valeur au début de process
+2. 
+// il faut à tout prix la bande de registre soit synchrone \\
+(00) -> (10) || (01) -> (11) 
+
+```apple js
+// ALU
+signal R 16 bits;
+signal Rmul 32 bits;
+signal Radd 17 bits;
+begin
+    Rmul <= A * B;
+    R <=    Radd(A + B) when op = x"00" else end;
+            A - B when op = x"01" else end;
+            A * B when op = ...
+    fc <= Radd(16);
+    f2 <= '1' when R = x"0000" else '0'; // flag zero
+    S <= R; // S n'est pas réutilisable
+    Radd <= ('0'&A) + ('0'&B);
+end;
+```

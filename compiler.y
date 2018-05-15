@@ -132,13 +132,13 @@ Affectation: tID tOPEQU Expression tFIN_I	{
 												}
 											};
 
-Expression:	tID								{	
-												ts_push(symbolTable, "tmp", s_int);
+Expression:	tID								{
+                                                ts_push(symbolTable, "tmp", s_int);
 												int existing_adr = ts_getAdr(symbolTable, $1);
 												if(existing_adr < 0) { 
 													printf("\n\n[error] %s undeclared\n\n", $1);
 												} else {
-													mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+													mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
 													mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
 												}
 											}
