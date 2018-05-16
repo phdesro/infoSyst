@@ -1,16 +1,39 @@
 %{
 	#include "compiler.tab.h"
+    #include "util/util_string.h"
+
+    String * str;
 %}
 
 %x comment
+%x string
 
 %%
 
-"/*"         BEGIN(comment);
+%{
+/* Commentaires complexes */
+%}
+"/*"         			{	BEGIN(comment);	}
 <comment>[^*\n]*        
 <comment>"*"+[^*/\n]*   
 <comment>\n             
-<comment>"*"+"/"        BEGIN(INITIAL);
+<comment>"*"+"/"        {	BEGIN(INITIAL);	}
+
+%{
+/* Chaine de caracteres */
+%}
+"\""			{
+                    str = new_String();
+	                BEGIN(string);
+	            }
+<string>[^\n\"]	{   us_append(str, yytext[0]);  }
+<string>"\\".   {   us_append(str, yytext[1]);  }
+<string>"\n" 	{   printf("Multiline not allowed strings\n"); }
+<string>"\""	{
+                    BEGIN(INITIAL);
+                    yylval.str = us_content(str);
+                    return tSTRING;
+                }
 
 main 		{	return  tFCT_MAIN;	}
 const 		{	return  tCONST;	}
@@ -74,9 +97,11 @@ while		{	return 	tWHILE;	}
 %}
 \/\/.+\n	{	}	
 
+"?"           {   return tQUESTION;   }
+":"           {   return tDOUBLEDOTS; }
 
-
-[A-Za-z][A-Za-z0-9]* 	{	
+[A-Za-z][A-Za-z0-9]* 	{
+                            yylval.str = malloc(sizeof(char) * strlen(yytext));
 							strcpy(yylval.str, yytext);
 							return  tID;	
 						}

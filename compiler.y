@@ -1,12 +1,13 @@
 %code requires {
 	#include <stdio.h>
+	#include <string.h>
 
 	#include "memins/opcode.h"
 	#include "util/util.h"
 }
 
-%union { 
-	char str[80]; 
+%union {
+	char* str;
 	int nb; 
 	TypeSymbol lxType;
 	OpCode lxOp;
@@ -34,9 +35,11 @@
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
 %token tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
 %token tEQU tSUP tSUPEQU tINF tINFEQU tDIF
-%token tIF tELSE tWHILE 
+%token tIF tELSE tWHILE
+%token tQUESTION tDOUBLEDOTS
+%token tSTRING
 
-%type <str> tID
+%type <str> tID tSTRING
 %type <nb> tNB
 %type <lxType> Type tINT tFLOAT tCHAR tVOID
 %type <lxOp> tEQU tSUP tSUPEQU tINF tINFEQU tDIF
@@ -151,14 +154,18 @@ Expression:	tID								{
 			| Expression tOPSUB Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPDIV Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
-			| tPO Expression tPF ;
+			| tPO Expression tPF
+			| Condition tQUESTION Expression tDOUBLEDOTS Expression ;
+
+/*Ternary:    Condition '?' Expression ':' Expression { printf("ternary"); };*/
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
 	Printf tFIN_I; 
 
-Printf:		tFCT_PRINTF tPO tID tPF 							{ printf("printf -> %s\n", $3);	}
-			| tFCT_PRINTF tPO tQUOTEDOUBLE tID tQUOTEDOUBLE tPF { printf("printf -> %s\n", $4); };
+Printf:		tFCT_PRINTF tPO tID tPF 							{   printf("printf -> %s\n", $3);	}
+            | tFCT_PRINTF tPO tSTRING tPF                       {   printf("printf -> %s\n", $3);    }
+			| tFCT_PRINTF tPO tQUOTEDOUBLE tID tQUOTEDOUBLE tPF {   printf("printf -> %s\n", $4); };
 
 Params:		Param tVIRGULE Params
 			| Param;
