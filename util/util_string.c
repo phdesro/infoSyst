@@ -3,6 +3,8 @@
 String * new_String()	{
 	String * tmp = malloc(sizeof(String));
 	tmp->content = malloc(sizeof(char) * EXT);
+	for(int i = 0; i < EXT; i++)
+		tmp->content[i] = '\0';
 	tmp->max = EXT;
 	return tmp;
 }
@@ -29,6 +31,8 @@ void us_append(String * str, char character) {
 		str->max += EXT;
 		char * tmp = malloc(sizeof(char) * (str->max));
 		strcpy(tmp, str->content);
+		for(int i = str_len; i < str->max; i++)
+			tmp[i] = '\0';
 		free(str->content);
 		str->content = tmp;
 	}

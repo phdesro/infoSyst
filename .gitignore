@@ -7,3 +7,4 @@ flex
 /compiler.output
 /memins/testmemins
 /symtab/testsymtab
+*.asm

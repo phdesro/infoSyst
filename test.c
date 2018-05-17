@@ -1,9 +1,9 @@
 int main(arg)   {
 	//int i, j,k ,r;
-	/*
+
 	int i, a;
-	*/
-	printf("Nguyen Du1Nguyen Du2Nguyen Du3Nguyen Du4Nguyen Du5Nguyen Du6Nguyen Du7Nguyen Du8Nguyen Du9Nguyen Du0");
+
+	//printf("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 		
 	/* ---- test if ----
 	if (i==j)
@@ -46,5 +46,5 @@ int main(arg)   {
 	/*
 	 ---- test ternary ----
 	 */
-	//i = i==5 ? 1 : 2;
+	i = i==5 ? 1 : 2;
 }

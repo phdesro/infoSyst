@@ -69,4 +69,11 @@ void mi_print(MemoireInstr * mem);
  */
 void mi_fill_jump(MemoireInstr * mem, int distance);
 
+/**
+ * Translate the instruction memory in asm code an save it in file
+ * @param mem
+ * @param filename
+ */
+void mi_write(MemoireInstr * mem, char * filename);
+
 #endif

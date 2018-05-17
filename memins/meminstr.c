@@ -149,3 +149,25 @@ void mi_fill_jump(MemoireInstr * mem, int distance) {
 	mem->nb_jump--;
 
 }
+
+/**
+ * Translate the instruction memory in asm code an save it in file
+ * @param mem
+ * @param filename
+ */
+void mi_write(MemoireInstr * mem, char * filename) {
+	FILE *file = fopen(filename, "w");
+	if (file == NULL)
+	{
+		perror("Error opening file : ");
+		return;
+	}
+
+	Node * node = mem->first;
+	while(node != NULL) {
+		fprintf(file, "%s\n", i_write(node->instruction));
+		node = node->next;
+	}
+
+	fclose(file);
+}

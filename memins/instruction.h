@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "opcode.h"
 
@@ -36,5 +37,7 @@ void i_print(Instruction * instruction);
 int i_isWaitingJump(Instruction * instruction);
 
 void i_setAddress(Instruction * instruction, int address);
+
+char * i_write(Instruction * instruction);
 
 #endif

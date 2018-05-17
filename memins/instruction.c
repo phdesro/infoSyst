@@ -65,3 +65,22 @@ int i_isWaitingJump(Instruction * instruction) {
 void i_setAddress(Instruction * instruction, int address) {
 	instruction->param[0] = address;
 }
+
+char * i_write(Instruction * instruction) {
+	char * operation = op_string(instruction->operation);
+	int arg_num = op_args(instruction->operation);
+	int length = strlen(operation) + arg_num*2;
+
+	char * str = malloc(sizeof(char) * length);
+	strcpy(str, operation);
+	for(int i = 0; i < arg_num; i++) {
+
+		strcat(str, " ");
+		char registre[2];
+		sprintf(registre, "%d", instruction->param[i]);
+
+		strcat(str, registre);
+	}
+
+	return str;
+}

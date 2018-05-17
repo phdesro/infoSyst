@@ -13,7 +13,7 @@
 	OpCode lxOp;
 }
 
-%left tEQU tDIF
+%left tQUESTION tDOUBLEDOTS%left tEQU tDIF
 %left tSUPEQU tSUP tINF tINFEQU
 
 %left tOPADD tOPSUB
@@ -109,15 +109,8 @@ While_Block: Instruction
             | tAO Body_line tAF
             | tFIN_I;
 
-Condition_stmt: tPO Condition tPF;
+Condition_stmt: tPO Expression tPF;
 
-Condition:	Condition tEQU Condition 	    {   util_cond(symbolTable, memInst, $2); }
-			| Condition tSUP Condition 	    {   util_cond(symbolTable, memInst, $2); }
-			| Condition tSUPEQU Condition 	{   util_cond(symbolTable, memInst, $2); }
-			| Condition tINF Condition 	    {   util_cond(symbolTable, memInst, $2); }
-			| Condition tINFEQU Condition 	{   util_cond(symbolTable, memInst, $2); }
-			| Condition tDIF Condition 	    {   util_cond(symbolTable, memInst, $2); }
-			| Expression ;
 
 /*-------------- Instructions --------------*/
 
@@ -154,10 +147,16 @@ Expression:	tID								{
 			| Expression tOPSUB Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPDIV Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
-			| tPO Expression tPF
-			| Condition tQUESTION Expression tDOUBLEDOTS Expression ;
 
-/*Ternary:    Condition '?' Expression ':' Expression { printf("ternary"); };*/
+			| Expression tEQU Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tSUP Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tSUPEQU Expression 	{   util_cond(symbolTable, memInst, $2); }
+            | Expression tINF Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tINFEQU Expression 	{   util_cond(symbolTable, memInst, $2); }
+            | Expression tDIF Expression 	    {   util_cond(symbolTable, memInst, $2); }
+
+			| tPO Expression tPF
+			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary"); };
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
@@ -197,10 +196,7 @@ void init() {
 }
 
 int main(void) {
-	
 	init();
-	
 	yyparse();
-	ts_print(symbolTable);
-	mi_print(memInst);
+	mi_write(memInst, "test.asm");
 }

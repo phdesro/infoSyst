@@ -65,6 +65,8 @@ int main()	{
 
 	if_test(mem);
 
+	mi_write(mem, "memins.test.asm");
+
 
 	return 0;
 }
