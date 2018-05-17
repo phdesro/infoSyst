@@ -36,8 +36,18 @@ void i_print(Instruction * instruction);
  */
 int i_isWaitingJump(Instruction * instruction);
 
+/**
+ * Update address information for jump instruction (JMP, JMPC)
+ * @param jump instruction
+ * @param address
+ */
 void i_setAddress(Instruction * instruction, int address);
 
-char * i_write(Instruction * instruction);
+/**
+ * Convert an instruction into a string
+ * @param instruction
+ * @return
+ */
+char * i_to_string(Instruction * instruction);
 
 #endif

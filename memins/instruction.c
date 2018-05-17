@@ -62,11 +62,21 @@ int i_isWaitingJump(Instruction * instruction) {
 		   && instruction->param[0] == I_ADR_UNFILLED;
 }
 
+/**
+ * Update address information for jump instruction (JMP, JMPC)
+ * @param jump instruction
+ * @param address
+ */
 void i_setAddress(Instruction * instruction, int address) {
 	instruction->param[0] = address;
 }
 
-char * i_write(Instruction * instruction) {
+/**
+ * Convert an instruction into a string
+ * @param instruction
+ * @return
+ */
+char * i_to_string(Instruction * instruction) {
 	char * operation = op_string(instruction->operation);
 	int arg_num = op_args(instruction->operation);
 	int length = strlen(operation) + arg_num*2;

@@ -156,7 +156,7 @@ Expression:	tID								{
             | Expression tDIF Expression 	    {   util_cond(symbolTable, memInst, $2); }
 
 			| tPO Expression tPF
-			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary"); };
+			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary\n"); }; //TODO check if we collect correctly information
 
 /*-------------- Functions specifiques --------------*/
 Call_function:
@@ -190,7 +190,6 @@ Type:		tINT
 %%
 
 void init() {
-	printf("init");
 	symbolTable = new_SymbolTab();
 	memInst = new_MemoireInstr();
 }

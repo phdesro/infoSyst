@@ -165,7 +165,7 @@ void mi_write(MemoireInstr * mem, char * filename) {
 
 	Node * node = mem->first;
 	while(node != NULL) {
-		fprintf(file, "%s\n", i_write(node->instruction));
+		fprintf(file, "%s\n", i_to_string(node->instruction));
 		node = node->next;
 	}
 
