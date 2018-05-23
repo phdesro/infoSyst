@@ -13,11 +13,15 @@
 	OpCode lxOp;
 }
 
-%left tQUESTION tDOUBLEDOTS%left tEQU tDIF
-%left tSUPEQU tSUP tINF tINFEQU
+
 
 %left tOPADD tOPSUB
 %left tOPMUL tOPDIV
+
+%left tEQU tDIF
+%left tSUPEQU tSUP tINF tINFEQU
+
+%left tQUESTION tDOUBLEDOTS
 
 %{
 	int yylex(void);
@@ -33,7 +37,7 @@
 %token tID tNB tFCT_MAIN tFCT_PRINTF
 %token tCONST tINT tFLOAT tCHAR tVOID
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
-%token tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
+%token tOPAFC tOPADD tOPSUB tOPDIV tOPMUL
 %token tEQU tSUP tSUPEQU tINF tINFEQU tDIF
 %token tIF tELSE tWHILE
 %token tQUESTION tDOUBLEDOTS
@@ -43,7 +47,7 @@
 %type <nb> tNB
 %type <lxType> Type tINT tFLOAT tCHAR tVOID
 %type <lxOp> tEQU tSUP tSUPEQU tINF tINFEQU tDIF
-%type <lxOp> tOPADD tOPSUB tOPDIV tOPMUL tOPEQU
+%type <lxOp> tOPADD tOPSUB tOPDIV tOPMUL
 
 %nonassoc tIFX
 %nonassoc tELSE
@@ -117,7 +121,7 @@ Condition_stmt: tPO Expression tPF;
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
 Declaration: Type { type_tmp = $1; } Params tFIN_I;
 
-Affectation: tID tOPEQU Expression tFIN_I	{	
+Affectation: tID tOPAFC Expression tFIN_I	{
 												int existing_adr = ts_getAdr(symbolTable, $1);
 												if(existing_adr < 0) { 
 													printf("\n\n[error] %s undeclared\n\n", $1); 
@@ -148,12 +152,12 @@ Expression:	tID								{
 			| Expression tOPDIV Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
 
-			| Expression tEQU Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tSUP Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tSUPEQU Expression 	{   util_cond(symbolTable, memInst, $2); }
-            | Expression tINF Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tINFEQU Expression 	{   util_cond(symbolTable, memInst, $2); }
-            | Expression tDIF Expression 	    {   util_cond(symbolTable, memInst, $2); }
+			| Expression tEQU       Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tSUP       Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tSUPEQU    Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tINF       Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tINFEQU    Expression 	    {   util_cond(symbolTable, memInst, $2); }
+            | Expression tDIF       Expression 	    {   util_cond(symbolTable, memInst, $2); }
 
 			| tPO Expression tPF
 			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary\n"); }; //TODO check if we collect correctly information

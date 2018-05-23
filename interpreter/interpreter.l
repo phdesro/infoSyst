@@ -29,11 +29,8 @@
 %{
 /* operations */
 %}
-"+" 		{	yylval.lxOp = op_add; 	return tOPADD;		}
-"-" 		{	yylval.lxOp = op_sub; 	return tOPSUB;		}
-"*" 		{	yylval.lxOp = op_equ; 	return tOPMUL;		}
-"/" 		{	yylval.lxOp = op_equ; 	return tOPDIV;		}
-"=" 		{	yylval.lxOp = op_equ; 	return tOPEQU;		}
+"ADD" 		{	yylval.lxOp = op_add; 	return tOPADD;		}
+"SUB" 		{	yylval.lxOp = op_sub; 	return tOPSUB;		}
 
 %{
 /* basic functions */

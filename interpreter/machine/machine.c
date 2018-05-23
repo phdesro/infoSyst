@@ -10,11 +10,16 @@ Machine * new_Machine() {
 	tmp->instruction_memory = new_MemoireInstr();
 }
 
-void m_set_reg(Machine * machine, int reg, int value) {
+int m_set_reg(Machine * machine, int reg, int value) {
+	if(reg >= NB_REG)	{
+		printf("Access to register %d", reg);
+		return 0;
+	}
 	machine->regs[reg] = value;
+	return 1;
 }
 
-void m_store_reg(Machine * machine, int reg, int address) {
+int m_store_reg(Machine * machine, int reg, int address) {
 
 	// in case addres > max + PADDING
 	// we need to extends more than 1 time, but this is not really necessary
@@ -31,10 +36,10 @@ void m_store_reg(Machine * machine, int reg, int address) {
 	machine->data_memory[address] = machine->regs[reg];
 }
 
-void m_load_reg(Machine * machine, int reg, int address) {
+int m_load_reg(Machine * machine, int reg, int address) {
 	if(address > machine->current_data) {
 		printf("Core dump: segmentation false");
-		return;
+		return 0;
 	}
 	machine->regs[reg] = machine->data_memory[address];
 }

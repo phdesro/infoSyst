@@ -5,10 +5,11 @@
 #include "../../memins/meminstr.h"
 
 #define PADDING 255
-#define SYSTEM 8 // bits
+#define SYSTEM 8 		// bits
+#define NB_REGISTER 10
 
 typedef struct {
-	int regs[10];
+	int regs[NB_REGISTER];
 
 	// instruction memory
 	MemoireInstr * instruction_memory;
@@ -23,10 +24,31 @@ typedef struct {
 
 Machine * new_Machine();
 
-void m_set_reg(Machine * machine, int reg, int value);
+/**
+ * Set value into a register
+ * @param machine
+ * @param reg
+ * @param value
+ * @return 1 if success, 0 if fail
+ */
+int m_set_reg(Machine * machine, int reg, int value);
 
-void m_store_reg(Machine * machine, int reg, int address);
+/**
+ * Store value in register to a data memory at a specific address
+ * @param machine
+ * @param reg
+ * @param address
+ * @return 1 if success, 0 if fail
+ */
+int m_store_reg(Machine * machine, int reg, int address);
 
-void m_load_reg(Machine * machine, int reg, int address);
+/**
+ * Get value from a data address and set it into the register
+ * @param machine
+ * @param reg
+ * @param address
+ * @return 1 if success, 0 if fail
+ */
+int m_load_reg(Machine * machine, int reg, int address);
 
 #endif //INFOSYST_MACHINE_H
