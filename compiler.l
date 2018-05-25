@@ -101,7 +101,7 @@ while		{	return 	tWHILE;	}
 "?"           {   return tQUESTION;   }
 ":"           {   return tDOUBLEDOTS; }
 
-[A-Za-z][A-Za-z0-9]* 	{
+[A-Za-z_][A-Za-z0-9_]* 	{
                             yylval.str = malloc(sizeof(char) * strlen(yytext));
 							strcpy(yylval.str, yytext);
 							return  tID;	

@@ -2,13 +2,14 @@
 	#include <stdio.h>
 	#include <string.h>
 
-	#include "memins/opcode.h"
+	#include "../memins/meminstr.h"
+	#include "machine/machine.h"
+	#include "executer/executer.h"
 }
 
 %union {
 	char* str;
-	int nb; 
-	TypeSymbol lxType;
+	int nb;
 	OpCode lxOp;
 }
 
@@ -16,10 +17,13 @@
 	int yylex(void);
 	void yyerror(char*);
 
-	Machine * machine = new_Machine();
+	Machine * machine;
 %}
 
-%token tID tNB tFCT_MAIN tFCT_PRINTF
+%token tID tINT tOP
+
+%type <lxOp> tOP
+%type <nb> tINT
 
 %nonassoc tIFX
 %nonassoc tELSE
@@ -27,15 +31,17 @@
 %%
 
 //	starting point
-S: Body_line ;
-
-Body_line:	Instruction Body_line
+S:      	Instruction S
 			| Instruction;
+
+Instruction: tOP tINT tINT tINT { i_execute(machine , new_Instruction($1, $2, $3, $4));  }
+            | tOP tINT tINT     { i_execute(machine , new_Instruction($1, $2, $3));  }
+            | tOP tINT          { i_execute(machine , new_Instruction($1, $2));  }
 
 %%
 
 void init() {
-
+    machine = new_Machine();
 }
 
 int main(void) {

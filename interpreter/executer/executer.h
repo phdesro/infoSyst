@@ -6,6 +6,6 @@
 #include "../../memins/instruction.h"
 #include "../machine/machine.h"
 
-void i_execute(Machine * machine , Instruction * instruction);
+int i_execute(Machine * machine , Instruction * instruction);
 
 #endif

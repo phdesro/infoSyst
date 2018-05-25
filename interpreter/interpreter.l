@@ -1,6 +1,5 @@
 %{
 	#include "interpreter.tab.h"
-
 %}
 
 %x comment
@@ -8,7 +7,7 @@
 %%
 
 %{
-/* Commentaires complexes */
+/* multi line comment */
 %}
 "/*"         			{	BEGIN(comment);	}
 <comment>[^*\n]*        
@@ -17,41 +16,39 @@
 <comment>"*"+"/"        {	BEGIN(INITIAL);	}
 
 %{
-/* mise en page */
+/* simple line comment */
 %}
-[ \n\t]		{	}
-"," 		{	return  tVIRGULE;	}
-";" 		{	return  tFIN_I;		}
-
-"(" 		{	return  tPO;	}
-")" 		{	return  tPF;	}
+#.+\n	{	}
 
 %{
 /* operations */
 %}
-"ADD" 		{	yylval.lxOp = op_add; 	return tOPADD;		}
-"SUB" 		{	yylval.lxOp = op_sub; 	return tOPSUB;		}
+"ADD" 		{	yylval.lxOp = op_add; 	    return tOP;		}
+"SUB" 		{	yylval.lxOp = op_sub; 	    return tOP;		}
+"MUL" 		{	yylval.lxOp = op_mul; 	    return tOP;		}
+"DIV" 		{	yylval.lxOp = op_div; 	    return tOP;		}
+"EQU" 		{	yylval.lxOp = op_equ; 	    return tOP;		}
+"INF" 		{	yylval.lxOp = op_inf; 	    return tOP;		}
+"INFE" 		{	yylval.lxOp = op_infe; 	    return tOP;		}
+"SUP" 		{	yylval.lxOp = op_sup; 	    return tOP;		}
+"SUPE" 		{	yylval.lxOp = op_supe; 	    return tOP;		}
+"DIF" 		{	yylval.lxOp = op_dif; 	    return tOP;		}
+"COP" 		{	yylval.lxOp = op_cop; 	    return tOP;		}
+"AFC" 		{	yylval.lxOp = op_afc; 	    return tOP;		}
+"LOAD" 		{	yylval.lxOp = op_load; 	    return tOP;		}
+"STORE" 	{	yylval.lxOp = op_store; 	return tOP;		}
+"JMPC" 		{	yylval.lxOp = op_jmpc; 	    return tOP;		}
+"JMP" 		{	yylval.lxOp = op_jmp; 	    return tOP;		}
 
 %{
-/* basic functions */
+/* skip layout characters */
 %}
-"printf" 	{	return  tFCT_PRINTF;	}
+[ \n\t]		{}
 
 %{
-/* comments */
+/* number */
 %}
-\/\/.+\n	{	}	
-
-"?"           {   return tQUESTION;   }
-":"           {   return tDOUBLEDOTS; }
-
-[A-Za-z][A-Za-z0-9]* 	{
-                            yylval.str = malloc(sizeof(char) * strlen(yytext));
-							strcpy(yylval.str, yytext);
-							return  tID;	
-						}
-
 [0-9][0-9]*	{
 				yylval.nb = atoi(yytext);
-				return  tNB;
+				return  tINT;
 			}

@@ -119,9 +119,19 @@ Condition_stmt: tPO Expression tPF;
 /*-------------- Instructions --------------*/
 
 // { type_tmp = $1 } permet de mémoriser le type temporairement en variable global avant de descendre plus bas
-Declaration: Type { type_tmp = $1; } Params tFIN_I;
+Declaration: Type { type_tmp = $1; } Variables tFIN_I;
 
-Affectation: tID tOPAFC Expression tFIN_I	{
+Variables : Variable tVIRGULE Variables
+            | Variable;
+
+Variable : tID {
+                    ts_push(symbolTable, $1, type_tmp);
+                    mi_push(memInst, new_Instruction(op_afc, 0, 0));
+                    mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
+               }
+            | tID tOPAFC Expression {printf("Affectation from Declaration %s\n", $1);};
+
+Affectation: tID tOPAFC Expression tFIN_I {
 												int existing_adr = ts_getAdr(symbolTable, $1);
 												if(existing_adr < 0) { 
 													printf("\n\n[error] %s undeclared\n\n", $1); 
@@ -202,4 +212,5 @@ int main(void) {
 	init();
 	yyparse();
 	mi_write(memInst, "test.asm");
+	util_copy_file("test.asm", "interpreter/test.asm");
 }

@@ -8,3 +8,7 @@ flex
 /memins/testmemins
 /symtab/testsymtab
 *.asm
+/interpreter/interpreter.output
+/interpreter/interpreter.tab.c
+/interpreter/interpreter.tab.h
+/interpreter/interpreter

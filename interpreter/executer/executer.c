@@ -1,14 +1,22 @@
 #include "executer.h"
 
 int i_execute(Machine * machine, Instruction * instruction) {
+
 	int p0 = instruction->param[0];
 	int p1 = instruction->param[1];
 	int p2 = instruction->param[2];
+
+	if(machine->regs[NB_REGISTER-1] == 0) {
+		i_print(instruction);
+		m_print(machine);
+		machine->regs[NB_REGISTER - 1] = 1;
+	}
 
 	switch(instruction->operation) {
 
 		// arithmetics
 		case op_add:
+
 			return m_set_reg(machine, p0, machine->regs[p1] + machine->regs[p2]);
 		case op_sub:
 			return m_set_reg(machine, p0, machine->regs[p1] - machine->regs[p2]);

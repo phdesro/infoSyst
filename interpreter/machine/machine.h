@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include "../../memins/meminstr.h"
 
-#define PADDING 255
+
+#define MEMORY_PADDING 255
 #define SYSTEM 8 		// bits
 #define NB_REGISTER 10
 
@@ -50,5 +51,7 @@ int m_store_reg(Machine * machine, int reg, int address);
  * @return 1 if success, 0 if fail
  */
 int m_load_reg(Machine * machine, int reg, int address);
+
+void m_print(Machine * machine);
 
 #endif //INFOSYST_MACHINE_H
