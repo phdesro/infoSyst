@@ -38,7 +38,7 @@ int op_args(OpCode op) {
 			return 3;
 		case op_cop: case op_afc: case op_load: case op_store: case op_jmpc:
 			return 2;
-		case op_jmp:
+		case op_jmp: case op_echo:
 			return 1;
 		default:
 			return -1;

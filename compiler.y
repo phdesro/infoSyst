@@ -129,7 +129,12 @@ Variable : tID {
                     mi_push(memInst, new_Instruction(op_afc, 0, 0));
                     mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
                }
-            | tID tOPAFC Expression {printf("Affectation from Declaration %s\n", $1);};
+            | tID {
+                    ts_push(symbolTable, $1, type_tmp);
+                } tOPAFC Expression {
+                    mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+                    mi_push(memInst, new_Instruction(op_store, ts_getAdr(symbolTable, $1), 0));
+                };
 
 Affectation: tID tOPAFC Expression tFIN_I {
 												int existing_adr = ts_getAdr(symbolTable, $1);
@@ -139,15 +144,16 @@ Affectation: tID tOPAFC Expression tFIN_I {
 												else {
 													mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
 													mi_push(memInst, new_Instruction(op_store, existing_adr, 0));
+
 												}
 											};
 
 Expression:	tID								{
-                                                ts_push(symbolTable, "tmp", s_int);
 												int existing_adr = ts_getAdr(symbolTable, $1);
 												if(existing_adr < 0) { 
 													printf("\n\n[error] %s undeclared\n\n", $1);
 												} else {
+												    ts_push(symbolTable, "tmp", s_int);
 													mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
 													mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
 												}
@@ -162,12 +168,21 @@ Expression:	tID								{
 			| Expression tOPDIV Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
 
-			| Expression tEQU       Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tSUP       Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tSUPEQU    Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tINF       Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tINFEQU    Expression 	    {   util_cond(symbolTable, memInst, $2); }
-            | Expression tDIF       Expression 	    {   util_cond(symbolTable, memInst, $2); }
+			| tOPSUB Expression 	{
+			                             mi_push(memInst, new_Instruction(op_afc, 0, 0));
+
+			                             ts_push(symbolTable, "tmp", s_int);
+			                             mi_push(memInst, new_Instruction(op_load, 1, ts_peek(symbolTable)));
+			                             mi_push(memInst, new_Instruction(op_sub, 0, 0, 1));
+			                             mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
+			                        }
+
+			| Expression tEQU       Expression 	    {   util_op(symbolTable, memInst, $2); }
+            | Expression tSUP       Expression 	    {   util_op(symbolTable, memInst, $2); }
+            | Expression tSUPEQU    Expression 	    {   util_op(symbolTable, memInst, $2); }
+            | Expression tINF       Expression 	    {   util_op(symbolTable, memInst, $2); }
+            | Expression tINFEQU    Expression 	    {   util_op(symbolTable, memInst, $2); }
+            | Expression tDIF       Expression 	    {   util_op(symbolTable, memInst, $2); }
 
 			| tPO Expression tPF
 			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary\n"); }; //TODO check if we collect correctly information
@@ -211,6 +226,9 @@ void init() {
 int main(void) {
 	init();
 	yyparse();
+
+	ts_print(symbolTable);
+
 	mi_write(memInst, "test.asm");
 	util_copy_file("test.asm", "interpreter/test.asm");
 }

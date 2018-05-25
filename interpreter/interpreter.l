@@ -48,7 +48,7 @@
 %{
 /* number */
 %}
-[0-9][0-9]*	{
+-?[0-9]+	{
 				yylval.nb = atoi(yytext);
 				return  tINT;
 			}

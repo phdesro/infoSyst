@@ -4,7 +4,6 @@
 
 	#include "../memins/meminstr.h"
 	#include "machine/machine.h"
-	#include "executer/executer.h"
 }
 
 %union {
@@ -34,9 +33,9 @@
 S:      	Instruction S
 			| Instruction;
 
-Instruction: tOP tINT tINT tINT { i_execute(machine , new_Instruction($1, $2, $3, $4));  }
-            | tOP tINT tINT     { i_execute(machine , new_Instruction($1, $2, $3));  }
-            | tOP tINT          { i_execute(machine , new_Instruction($1, $2));  }
+Instruction: tOP tINT tINT tINT { m_load_instruction(machine , new_Instruction($1, $2, $3, $4));  }
+            | tOP tINT tINT     { m_load_instruction(machine , new_Instruction($1, $2, $3));  }
+            | tOP tINT          { m_load_instruction(machine , new_Instruction($1, $2));  }
 
 %%
 
@@ -47,4 +46,8 @@ void init() {
 int main(void) {
 	init();
 	yyparse();
+
+    m_launch(machine);
+
+	//m_print(machine);
 }

@@ -25,7 +25,10 @@ typedef enum {
 	op_jmpc,
 
 	// 1 param
-	op_jmp
+	op_jmp,
+
+	// customized
+	op_echo		// print register content to console
 
 } OpCode;
 

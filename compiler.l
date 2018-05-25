@@ -107,7 +107,7 @@ while		{	return 	tWHILE;	}
 							return  tID;	
 						}
 
-[0-9][0-9]*	{
+-?[0-9]+	{
 				yylval.nb = atoi(yytext);
 				return  tNB;
 			}

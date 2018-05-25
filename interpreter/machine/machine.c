@@ -7,8 +7,40 @@ Machine * new_Machine() {
 	tmp->max_data = MEMORY_PADDING;
 	tmp->current_data = 0;
 
-	tmp->instruction_memory = new_MemoireInstr();
+	tmp->max_instruction = MEMORY_PADDING;
+	tmp->instruction_memory = malloc(sizeof(Instruction *) * MEMORY_PADDING);
+	tmp->current_instruction = 0;
+
+	tmp->program_counter = 0;
 	return tmp;
+}
+
+void m_load_instruction(Machine * machine, Instruction * instruction) {
+
+
+
+	if(machine->current_instruction >= machine->max_instruction) {
+		// extends memory
+		Instruction ** tmp = malloc(sizeof(Instruction *) * (machine->max_instruction + MEMORY_PADDING));
+		for(int i = 0; i < machine->max_instruction; i++)
+			tmp[i] = machine->instruction_memory[i];
+
+		free(machine->instruction_memory);
+		machine->instruction_memory = tmp;
+		machine->max_instruction += MEMORY_PADDING;
+	}
+
+	machine->instruction_memory[machine->current_instruction] = instruction;
+	machine->current_instruction++;
+}
+
+void m_launch(Machine * machine) {
+
+	while(machine->program_counter <= machine->current_instruction) {
+		printf("LOLOLOLO %d \n", machine->program_counter);
+		i_execute(machine, machine->instruction_memory[machine->program_counter]);
+		machine->program_counter ++;
+	}
 }
 
 int m_set_reg(Machine * machine, int reg, int value) {
@@ -32,6 +64,7 @@ int m_store_reg(Machine * machine, int reg, int address) {
 
 		free(machine->data_memory);
 		machine->data_memory = tmp;
+		machine->max_data += MEMORY_PADDING;
 	}
 
 	machine->data_memory[address] = machine->regs[reg];
@@ -57,7 +90,9 @@ void m_print(Machine * machine) {
 	printf("%d]\n", machine->regs[NB_REGISTER - 1]);
 
 	// memory instruction
-	mi_print(machine->instruction_memory);
+	for(int i = 0; i < machine->current_instruction; i++) {
+		i_print(machine->instruction_memory[i]);
+	}
 
 	printf("}\n");
 }

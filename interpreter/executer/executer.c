@@ -6,12 +6,6 @@ int i_execute(Machine * machine, Instruction * instruction) {
 	int p1 = instruction->param[1];
 	int p2 = instruction->param[2];
 
-	if(machine->regs[NB_REGISTER-1] == 0) {
-		i_print(instruction);
-		m_print(machine);
-		machine->regs[NB_REGISTER - 1] = 1;
-	}
-
 	switch(instruction->operation) {
 
 		// arithmetics

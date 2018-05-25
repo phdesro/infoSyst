@@ -4,26 +4,42 @@
 #include <stdlib.h>
 #include "../../memins/meminstr.h"
 
-
 #define MEMORY_PADDING 255
 #define SYSTEM 8 		// bits
 #define NB_REGISTER 10
 
+/**
+ * Virtual machine having :
+ * - register bank
+ * - instruction memory
+ * - memory in hard disk
+ */
 typedef struct {
 	int regs[NB_REGISTER];
 
 	// instruction memory
-	MemoireInstr * instruction_memory;
+	Instruction ** instruction_memory;
+	int max_instruction;
 	int current_instruction;
+
+	int program_counter;
 
 	// data memory
 	int * data_memory;
 	int max_data;
 	int current_data;
+	//TODO stack and heap?
 
 } Machine;
 
+// include here so that we avoid error when executer need to know machine structure
+#include "../executer/executer.h"
+
 Machine * new_Machine();
+
+void m_load_instruction(Machine * machine, Instruction * instruction);
+
+void m_launch(Machine * machine);
 
 /**
  * Set value into a register
