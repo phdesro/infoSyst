@@ -32,8 +32,8 @@ typedef enum {
 
 } OpCode;
 
-#define I_NO_PARAM -1
-#define I_ADR_UNFILLED -2
+#define I_ADR_UNFILLED -2	// indicate a parameter is an yet undefined address
+#define I_NO_PARAM -2147483648	// indicate empty in parameter
 
 /**
  * Convert OpCode into a litteral asm string

@@ -68,6 +68,18 @@ int m_store_reg(Machine * machine, int reg, int address);
  */
 int m_load_reg(Machine * machine, int reg, int address);
 
+/**
+ * Affect the address to pc in order to make a jump
+ * @param machine
+ * @param address
+ * @return
+ */
+int m_jump(Machine * machine, int address);
+
+/**
+ * Display virtual machine
+ * @param machine
+ */
 void m_print(Machine * machine);
 
 #endif //INFOSYST_MACHINE_H

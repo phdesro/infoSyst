@@ -6,11 +6,11 @@ int i_execute(Machine * machine, Instruction * instruction) {
 	int p1 = instruction->param[1];
 	int p2 = instruction->param[2];
 
+
 	switch(instruction->operation) {
 
 		// arithmetics
 		case op_add:
-
 			return m_set_reg(machine, p0, machine->regs[p1] + machine->regs[p2]);
 		case op_sub:
 			return m_set_reg(machine, p0, machine->regs[p1] - machine->regs[p2]);
@@ -39,6 +39,12 @@ int i_execute(Machine * machine, Instruction * instruction) {
 			return m_load_reg(machine, p0, p1);
 		case op_store:
 			return m_store_reg(machine, p0, p1);
+
+		case op_jmpc:
+			if(p1 != 0)
+				return 1;
+		case op_jmp:
+			return m_jump(machine, p0);
 
 		default:
 			printf("Unsupported operation : %s\n", op_string(instruction->operation));

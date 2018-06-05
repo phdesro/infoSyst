@@ -18,8 +18,8 @@ Instruction * new_Instruction(OpCode operation, ...) {
 	#pragma GCC diagnostic pop
 
 	instr->param[0] = va_arg(args, int);
-	instr->param[1] = nbargs < 2 ? -1 : va_arg(args, int);
-	instr->param[2] = nbargs < 3 ? -1 : va_arg(args, int);
+	instr->param[1] = nbargs < 2 ? I_NO_PARAM : va_arg(args, int);
+	instr->param[2] = nbargs < 3 ? I_NO_PARAM : va_arg(args, int);
 
 	if(nbargs > 3)	{
 		printf("error %d arguments dans new_Instruction()", nbargs);
@@ -43,10 +43,16 @@ void i_print(Instruction * ins) {
 	printf("{ %s ", op_string(ins->operation));
 
 	for(int i = 0; i < 3; i++) {
-		if(ins->param[i] >= 0)
-			printf(", %d ", ins->param[i]);
-		else if(ins->param[i] == I_ADR_UNFILLED)
-			printf(", ##@## ");
+
+		switch(ins->param[i]) {
+			case I_ADR_UNFILLED:
+				printf(", ##@## ");
+				break;
+			case I_NO_PARAM:
+				break;
+			default:
+				printf(", %d ", ins->param[i]);
+		}
 	}
 
 	printf(" }\n");
