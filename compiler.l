@@ -35,7 +35,12 @@
                     return tSTRING;
                 }
 
+%{
+/* supported functions */
+%}
 main 		{	return  tFCT_MAIN;	}
+echo        {   return  tFCT_ECHO;  }
+
 const 		{	return  tCONST;	}
 
 %{

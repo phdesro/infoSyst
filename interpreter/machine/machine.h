@@ -76,6 +76,8 @@ int m_load_reg(Machine * machine, int reg, int address);
  */
 int m_jump(Machine * machine, int address);
 
+int m_echo(Machine * machine, int reg);
+
 /**
  * Display virtual machine
  * @param machine

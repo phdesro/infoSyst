@@ -44,6 +44,9 @@ int m_set_reg(Machine * machine, int reg, int value) {
 
 int m_store_reg(Machine * machine, int reg, int address) {
 
+	//TODO need a proper version:
+	address /= 16;
+
 	// in case addres > max + MEMORY_PADDING
 	// we need to extends more than 1 time, but this is not really necessary
 	while(address >= machine->max_data) {
@@ -63,6 +66,9 @@ int m_store_reg(Machine * machine, int reg, int address) {
 }
 
 int m_load_reg(Machine * machine, int reg, int address) {
+
+	address /= 16;
+
 	if(address > machine->current_data) {
 		printf("Segmentation false: Trying to access to data %d while machine data space is only %d\n", address, machine->current_data);
 		machine->regs[reg] = machine->data_memory[address];
@@ -93,6 +99,15 @@ void m_launch(Machine * machine) {
 	}
 
 	printf("Execution terminated\n");
+}
+
+int m_echo(Machine * machine, int reg) {
+	if(reg >= NB_REGISTER) {
+		printf("Access to register %d", reg);
+		return 0;
+	}
+	printf("%d\n", machine->regs[reg]);
+	return 1;
 }
 
 void m_print(Machine * machine) {

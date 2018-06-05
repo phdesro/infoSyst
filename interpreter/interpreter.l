@@ -39,6 +39,7 @@
 "STORE" 	{	yylval.lxOp = op_store; 	return tOP;		}
 "JMPC" 		{	yylval.lxOp = op_jmpc; 	    return tOP;		}
 "JMP" 		{	yylval.lxOp = op_jmp; 	    return tOP;		}
+"ECHO" 		{	yylval.lxOp = op_echo; 	    return tOP;		}
 
 %{
 /* skip layout characters */

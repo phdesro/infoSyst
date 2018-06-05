@@ -1,4 +1,4 @@
 int main()   {
-
-	int a, b = -19;
+	int a = 1;
+	echo(a);
 }

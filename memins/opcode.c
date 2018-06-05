@@ -22,6 +22,7 @@ char * op_string(OpCode op) {
 	case op_store:	return "STORE";
 	case op_jmpc:	return "JMPC";
 	case op_jmp:	return "JMP";
+	case op_echo: 	return "ECHO";
 	default:
 		return "###unknown###";
 	}

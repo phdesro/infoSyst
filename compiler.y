@@ -34,7 +34,7 @@
 	MemoireInstr * memInst;
 %}
 
-%token tID tNB tFCT_MAIN tFCT_PRINTF
+%token tID tNB tFCT_MAIN tFCT_PRINTF tFCT_ECHO
 %token tCONST tINT tFLOAT tCHAR tVOID
 %token tAO tAF tVIRGULE tPO tPF tFIN_I tQUOTEDOUBLE tQUOTESIMPLE
 %token tOPAFC tOPADD tOPSUB tOPDIV tOPMUL
@@ -167,7 +167,6 @@ Expression:	tID								{
 			| Expression tOPSUB Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPDIV Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
-
 			| tOPSUB Expression 	{
 			                             mi_push(memInst, new_Instruction(op_afc, 0, 0));
 
@@ -176,7 +175,6 @@ Expression:	tID								{
 			                             mi_push(memInst, new_Instruction(op_sub, 0, 0, 1));
 			                             mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
 			                        }
-
 			| Expression tEQU       Expression 	    {   util_op(symbolTable, memInst, $2); }
             | Expression tSUP       Expression 	    {   util_op(symbolTable, memInst, $2); }
             | Expression tSUPEQU    Expression 	    {   util_op(symbolTable, memInst, $2); }
@@ -188,12 +186,24 @@ Expression:	tID								{
 			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary\n"); }; //TODO check if we collect correctly information
 
 /*-------------- Functions specifiques --------------*/
-Call_function:
-	Printf tFIN_I; 
+Call_function:  Printf tFIN_I
+            | Echo tFIN_I;
 
 Printf:		tFCT_PRINTF tPO tID tPF 							{   printf("printf -> %s\n", $3);	}
             | tFCT_PRINTF tPO tSTRING tPF                       {   printf("printf -> %s\n", $3);    }
 			| tFCT_PRINTF tPO tQUOTEDOUBLE tID tQUOTEDOUBLE tPF {   printf("printf -> %s\n", $4); };
+
+Echo:       tFCT_ECHO tPO tID tPF
+                {
+                    int existing_adr = ts_getAdr(symbolTable, $3);
+                    if(existing_adr < 0) {
+                        printf("\n\n[error] %s undeclared\n\n", $3);
+                    }
+                    else {
+                        mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
+                        mi_push(memInst, new_Instruction(op_echo, 0));
+                    }
+                };
 
 Params:		Param tVIRGULE Params
 			| Param;
