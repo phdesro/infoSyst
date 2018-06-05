@@ -4,9 +4,12 @@
 #include <stdlib.h>
 #include "../../memins/meminstr.h"
 
-#define MEMORY_PADDING 255
+#define MEMORY_PADDING 20
 #define SYSTEM 8 		// bits
 #define NB_REGISTER 10
+
+#define M_NOT_INIT	-2147483646
+#define M_UNDEFINED -2147483647
 
 /**
  * Virtual machine having :
@@ -27,7 +30,7 @@ typedef struct {
 	// data memory
 	int * data_memory;
 	int max_data;
-	int current_data;
+//	int current_data;
 	//TODO stack and heap?
 
 } Machine;

@@ -1,4 +1,10 @@
 int main()   {
-	int a = 1;
-	echo(a);
+	int a = 2, b, c;
+	b = 1;
+	c = b;
+
+	while(a) {
+		b = b + c;
+		echo(a);
+	}
 }
