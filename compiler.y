@@ -44,7 +44,7 @@
 %token tSTRING
 
 %type <str> tID tSTRING
-%type <nb> tNB
+%type <nb> tNB tWHILE
 %type <lxType> Type tINT tFLOAT tCHAR tVOID
 %type <lxOp> tEQU tSUP tSUPEQU tINF tINFEQU tDIF
 %type <lxOp> tOPADD tOPSUB tOPDIV tOPMUL
@@ -101,12 +101,13 @@ Else_Block:	Instruction
 
 While: tWHILE Condition_stmt    {
                                     mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
-                                    while_adr_tmp = memInst->last_address;
+                                    $1 = memInst->last_address;
 
                                 }   While_Block {
                                                     mi_fill_jump(memInst, 0);
                                                     mi_push(memInst, new_Instruction(op_jmp, while_adr_tmp, 0));
-                                                    while_adr_tmp = -1000; // free tmp adr
+                                                    mi_print(memInst);
+                                                    mi_patch_jump(memInst, $1);
                                                 };
 
 While_Block: Instruction
@@ -127,7 +128,7 @@ Variables : Variable tVIRGULE Variables
 Variable : tID {
                     ts_push(symbolTable, $1, type_tmp);
                     mi_push(memInst, new_Instruction(op_afc, 0, 0));
-                    mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
+                    mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
                }
             | tID {
                     ts_push(symbolTable, $1, type_tmp);
@@ -155,7 +156,7 @@ Expression:	tID								{
 												} else {
 												    ts_push(symbolTable, "tmp", s_int);
 													mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
-													mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
+													mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
 												}
 											}
 			| tNB							{ 
@@ -173,7 +174,7 @@ Expression:	tID								{
 			                             ts_push(symbolTable, "tmp", s_int);
 			                             mi_push(memInst, new_Instruction(op_load, 1, ts_peek(symbolTable)));
 			                             mi_push(memInst, new_Instruction(op_sub, 0, 0, 1));
-			                             mi_push(memInst, new_Instruction(op_store, 0, ts_peek(symbolTable)));
+			                             mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
 			                        }
 			| Expression tEQU       Expression 	    {   util_op(symbolTable, memInst, $2); }
             | Expression tSUP       Expression 	    {   util_op(symbolTable, memInst, $2); }
@@ -237,7 +238,7 @@ int main(void) {
 	init();
 	yyparse();
 
-	ts_print(symbolTable);
+	//ts_print(symbolTable);
 
 	mi_write(memInst, "test.asm");
 	util_copy_file("test.asm", "interpreter/test.asm");

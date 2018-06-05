@@ -49,5 +49,5 @@ int main(void) {
 
     m_launch(machine);
 
-	m_print(machine);
+	//m_print(machine);
 }

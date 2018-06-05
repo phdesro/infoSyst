@@ -150,6 +150,16 @@ void mi_fill_jump(MemoireInstr * mem, int distance) {
 
 }
 
+int mi_patch_jump(MemoireInstr * mem, int line) {
+	Node * node = n_get(mem->first, (line - PADDING)/PADDING);
+	if(node->instruction->operation != op_jmp && node->instruction->operation != op_jmpc) {
+		printf("\n[Error] mi_patch_jump is trying to modify a not jump instruction: \n");
+		i_print(node->instruction);
+	}
+
+	i_setAddress(node->instruction, mem->last_address + PADDING);
+}
+
 /**
  * Translate the instruction memory in asm code an save it in file
  * @param mem
