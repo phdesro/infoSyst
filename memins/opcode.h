@@ -28,7 +28,8 @@ typedef enum {
 	op_jmp,
 
 	// customized
-	op_echo		// print register content to console
+	op_echo,		// print register content to console
+	op_nop			// do nothing
 
 } OpCode;
 

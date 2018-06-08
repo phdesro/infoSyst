@@ -6,8 +6,6 @@
 #ifndef MEMINSTR_H
 #define MEMINSTR_H
 
-#define PADDING 4
-
 // ================ private ================ //
 typedef struct Node {
 	Instruction * instruction;
@@ -70,9 +68,10 @@ void mi_print(MemoireInstr * mem);
 void mi_fill_jump(MemoireInstr * mem, int distance);
 
 /**
- * Fill the address of jump at a specific line
+ * Fill the address of jump at a specific line in instruction memory.
+ * Note that we patch juste before the target line in order to jump correctly
  * @param mem
- * @param line
+ * @param line : the target instruction for the jump
  */
 int mi_patch_jump(MemoireInstr * mem, int line);
 

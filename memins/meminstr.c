@@ -55,7 +55,7 @@ MemoireInstr * new_MemoireInstr() {
  */
 void mi_push(MemoireInstr * mem, Instruction * instruction) {
 
-	mem->last_address += PADDING;
+	mem->last_address += I_PADDING;
 	instruction->address = mem->last_address;
 	Node * node = new_Node(instruction);
 
@@ -133,7 +133,8 @@ void mi_fill_jump(MemoireInstr * mem, int distance) {
 	Node * jump_node = n_get(mem->first_jump, id_node);
 
 	// update the instruction coressponding
-	i_setAddress(jump_node->instruction, mem->last_address + PADDING);
+//	i_setAddress(jump_node->instruction, mem->last_address + I_PADDING);
+	i_setAddress(jump_node->instruction, mem->last_address );
 
 	// delete node
 	if(jump_node == mem->first_jump)	{
@@ -150,14 +151,22 @@ void mi_fill_jump(MemoireInstr * mem, int distance) {
 
 }
 
+/**
+ * Fill the address of jump at a specific line in instruction memory.
+ * Note that we patch juste before the target line in order to jump correctly
+ * @param mem
+ * @param line : the target instruction for the jump
+ */
 int mi_patch_jump(MemoireInstr * mem, int line) {
-	Node * node = n_get(mem->first, (line - PADDING)/PADDING);
+	Node * node = n_get(mem->first, (line - I_PADDING)/I_PADDING);
+
+
 	if(node->instruction->operation != op_jmp && node->instruction->operation != op_jmpc) {
 		printf("\n[Error] mi_patch_jump is trying to modify a not jump instruction: \n");
 		i_print(node->instruction);
 	}
 
-	i_setAddress(node->instruction, mem->last_address + PADDING);
+	i_setAddress(node->instruction, mem->last_address);
 }
 
 /**

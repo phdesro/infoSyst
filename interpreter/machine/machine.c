@@ -15,6 +15,7 @@ Machine * new_Machine() {
 	tmp->max_instruction = MEMORY_PADDING;
 	tmp->instruction_memory = malloc(sizeof(Instruction *) * MEMORY_PADDING);
 	tmp->current_instruction = -1;
+	tmp->address = 0;
 
 	tmp->program_counter = 0;
 	return tmp;
@@ -34,7 +35,9 @@ void m_load_instruction(Machine * machine, Instruction * instruction) {
 	}
 
 	machine->current_instruction++;
+	instruction->address = machine->address;
 	machine->instruction_memory[machine->current_instruction] = instruction;
+	machine->address += I_PADDING;
 
 }
 
@@ -84,11 +87,11 @@ int m_load_reg(Machine * machine, int reg, int address) {
 }
 
 int m_jump(Machine * machine, int address) {
-	if(address > machine->current_instruction) {
-		printf("Segmentation false: Trying to exec instruction at @%d while only have %d instructions\n", address, machine->current_instruction);
+	if(address/I_PADDING > machine->current_instruction) {
+		printf("Segmentation false: Trying to exec instruction at @%d while only have %d instructions (max address %d)\n", address, machine->current_instruction, machine->address - I_PADDING);
 		return 0;
 	}
-	machine->program_counter = address - 1;
+	machine->program_counter = address/I_PADDING - 1;
 	return 1;
 }
 

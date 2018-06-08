@@ -1,9 +1,12 @@
 int main()   {
 
-	int a = 5;
-	while(a > 0) {
-	    a = a - 1;
+	int a = 2;
+	if(a == 2) {
+		echo(a);
+	} else {
+		a = 3;
 		echo(a);
 	}
 
 }
+

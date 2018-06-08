@@ -76,12 +76,13 @@ Main: 		tINT tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("m
 /*-------------- Syntaxes conditionnelles --------------*/
 
 If:			tIF Condition_stmt  {
-                                    mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));/* wait @ of Else */
+                                    mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+                                    mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0)); // wait @ of Else
                                 } If_Block Else;
 
 If_Block: 	Instruction
 			| tAO Body_line tAF { 	
-									mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0)); 
+									mi_push(memInst, new_Instruction(op_jmp, I_ADR_UNFILLED, 0));
 								};
 											
 
@@ -99,15 +100,19 @@ Else:		tELSE 	{
 Else_Block:	Instruction
 			| tAO Body_line tAF;
 
-While: tWHILE Condition_stmt    {
+While: tWHILE   {
+                    $1 = memInst->last_address + I_PADDING; // address of first instruction in condition
+                } Condition_stmt    {
+                                    mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
                                     mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
-                                    $1 = memInst->last_address;
+
 
                                 }   While_Block {
+                                                    mi_push(memInst, new_Instruction(op_jmp, $1, 0));
                                                     mi_fill_jump(memInst, 0);
-                                                    mi_push(memInst, new_Instruction(op_jmp, while_adr_tmp, 0));
-                                                    mi_print(memInst);
-                                                    mi_patch_jump(memInst, $1);
+                                                    //mi_patch_jump(memInst, $1); // must patch before the target instruction
+                                                    mi_push(memInst, new_Instruction(op_nop));
+
                                                 };
 
 While_Block: Instruction
@@ -133,16 +138,15 @@ Variable : tID {
             | tID {
                     ts_push(symbolTable, $1, type_tmp);
                 } tOPAFC Expression {
-                    mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
-                    mi_push(memInst, new_Instruction(op_store, ts_getAdr(symbolTable, $1), 0));
-                };
+                                        mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+                                        mi_push(memInst, new_Instruction(op_store, ts_getAdr(symbolTable, $1), 0));
+                                    };
 
 Affectation: tID tOPAFC Expression tFIN_I {
 												int existing_adr = ts_getAdr(symbolTable, $1);
 												if(existing_adr < 0) { 
-													printf("\n\n[error] %s undeclared\n\n", $1); 
-												}
-												else {
+													printf("\n[error] %s undeclared\n", $1);
+												}   else {
 													mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
 													mi_push(memInst, new_Instruction(op_store, existing_adr, 0));
 
@@ -152,7 +156,7 @@ Affectation: tID tOPAFC Expression tFIN_I {
 Expression:	tID								{
 												int existing_adr = ts_getAdr(symbolTable, $1);
 												if(existing_adr < 0) { 
-													printf("\n\n[error] %s undeclared\n\n", $1);
+													printf("\n[error] %s undeclared\n", $1);
 												} else {
 												    ts_push(symbolTable, "tmp", s_int);
 													mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
@@ -170,7 +174,6 @@ Expression:	tID								{
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| tOPSUB Expression 	{
 			                             mi_push(memInst, new_Instruction(op_afc, 0, 0));
-
 			                             ts_push(symbolTable, "tmp", s_int);
 			                             mi_push(memInst, new_Instruction(op_load, 1, ts_peek(symbolTable)));
 			                             mi_push(memInst, new_Instruction(op_sub, 0, 0, 1));
@@ -198,7 +201,7 @@ Echo:       tFCT_ECHO tPO tID tPF
                 {
                     int existing_adr = ts_getAdr(symbolTable, $3);
                     if(existing_adr < 0) {
-                        printf("\n\n[error] %s undeclared\n\n", $3);
+                        printf("\n[error] %s undeclared\n", $3);
                     }
                     else {
                         mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
@@ -215,10 +218,9 @@ Param: tID 	{
 
 				// handlle error after pushed
 				switch(err)	{
-					case st_success: break; 
-					case st_full: printf(">> symtab full << "); break;
-					case st_existed: printf(">> existed symbol << "); break;
-					default: printf(">> cas not handled <<");
+					case st_success: break;
+					case st_existed: printf("\n[error] existed symbol %s\n\n", $1); break;
+					default: printf("\n[error] cas not handled \n\n");
 				}
 			};
 
@@ -238,7 +240,7 @@ int main(void) {
 	init();
 	yyparse();
 
-	//ts_print(symbolTable);
+	ts_print(symbolTable);
 
 	mi_write(memInst, "test.asm");
 	util_copy_file("test.asm", "interpreter/test.asm");

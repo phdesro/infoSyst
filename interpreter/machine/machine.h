@@ -24,6 +24,7 @@ typedef struct {
 	Instruction ** instruction_memory;
 	int max_instruction;
 	int current_instruction;
+	int address;
 
 	int program_counter;
 
