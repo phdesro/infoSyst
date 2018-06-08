@@ -31,25 +31,55 @@ int ts_pop(SymbolTab * tab)	{
 }
 
 /**
- * push new symbol to tab
- * @return : 0 if success, else check the enum ErrorSymbolTab
+ * Delete symbol greater then this depth
+ * @param depth
  */
-ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type)	{
+void ts_clean_depth(SymbolTab * tab, int depth) {
+	int i;
+	for(i = tab->index; i >= 0 && tab->symbols[i]->depth >= depth; i--) {
+		Symbol * sym = tab->symbols[i];
+		s_delete(sym);
+	}
+	tab->index = i;
+}
 
+/**
+ * push new symbol to tab
+ * @param tab
+ * @param symstr
+ * @param type
+ * @param depth
+ * @return
+ */
+ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type, int depth)	{
+
+	// assert: st is full
 	if(tab->index > TABMAX - 2)	{
-		// printf("Symbol table full\n");
-		// return NULL;	
+		printf("\n[error] symbol table is full\n");
 		return st_full;
 	}
 
-	// calcul last_adr
+	// assert: symbol already existed
+	for(int i = 0; i <= tab->index; i++) {
+		int not_tmp = !strcmp(tab->symbols[i]->symbol, "tmp") == 0;
+		int same_name = strcmp(tab->symbols[i]->symbol, symstr) == 0;
+		int same_depth = tab->symbols[i]->depth == depth;
+
+		if(not_tmp && same_name && same_depth) {
+
+			printf("\n[error] %s already existed\n", symstr);
+			return st_existed;
+		}
+	}
+
+	// compute last_adr
 	if(tab->last_adr < 0)
 		tab->last_adr = 0;
 	else {
 		tab->last_adr += s_size(tab->symbols[tab->index]);
 	}
 
-	Symbol * symbol = new_Symbol(symstr, type, tab->last_adr);
+	Symbol * symbol = new_Symbol(symstr, type, tab->last_adr, depth);
 
 	tab->index++;	
 	tab->symbols[tab->index] = symbol;
@@ -82,7 +112,7 @@ Symbol * ts_popSymbol(SymbolTab * tab)	{
  */
 void ts_print(SymbolTab * tab) {
 
-	printf("Symbol Tab : {\n");
+	printf("Symbol Table : {\n");
 	printf("\tsize : %d,\n", tab->index + 1);
 	printf("\tlast_adr : %d,\n", tab->last_adr);
 	printf("\t[\n");

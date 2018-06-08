@@ -38,24 +38,24 @@ Instruction * new_Instruction(OpCode operation, ...) {
  */
 void i_print(Instruction * ins) {
 
-	printf("@%d: ", ins->address);
+	printf("@%d \t", ins->address);
 
-	printf("{ %s ", op_string(ins->operation));
+	printf("| %s\t", op_string(ins->operation));
 
 	for(int i = 0; i < 3; i++) {
 
 		switch(ins->param[i]) {
 			case I_ADR_UNFILLED:
-				printf(", ##@## ");
+				printf(" ##@## \t");
 				break;
 			case I_NO_PARAM:
 				break;
 			default:
-				printf(", %d ", ins->param[i]);
+				printf(" %d \t", ins->param[i]);
 		}
 	}
 
-	printf(" }\n");
+	printf("\n");
 }
 
 /**

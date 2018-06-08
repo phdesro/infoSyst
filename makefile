@@ -24,6 +24,9 @@ test.memins: $(DIR_MEMINS)/instruction.c $(DIR_MEMINS)/meminstr.c $(DIR_MEMINS)/
 	$(CC) $(DIR_MEMINS)/opcode.c $(DIR_MEMINS)/instruction.c $(DIR_MEMINS)/meminstr.c $(DIR_MEMINS)/memins.test.c -o $(DIR_MEMINS)/testmemins
 	$(DIR_MEMINS)/testmemins
 
+exec:
+	interpreter/interpreter < interpreter/test.asm
+
 clean:
 	rm -rf compiler compiler.output compiler.tab.* lex.yy.c
 	echo "DELETE UTEST OF SYMBOL TABLE ======"

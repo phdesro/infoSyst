@@ -19,9 +19,10 @@ typedef struct {
  * @param symstr : 	variable name ("tmp" for temporary name)
  * @param type : 	see TypeSymbol
  * @param adr :		address assigment from symtab
+ * @param depth
  * @return new symbol
  */
-Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr);
+Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr, int depth);
 
 /**
  * Return size defined by its type. This function provides an abstract approach

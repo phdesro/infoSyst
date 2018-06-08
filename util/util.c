@@ -6,6 +6,7 @@
  * @param symbolTable
  * @param memInst
  * @param opCode
+ * @param depth
  */
 void util_op(SymbolTab * symbolTable, MemoireInstr * memInst, OpCode opCode) {
 

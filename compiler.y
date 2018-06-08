@@ -4,6 +4,11 @@
 
 	#include "memins/opcode.h"
 	#include "util/util.h"
+
+    /* --------------------- Modifiez le MODE en 1 pour afficher  -------------------------- */
+    #define SYMBOL_TABLE 1
+    #define INSTRUCTION_MEMORY 1
+    /* ------------------------------------------------------------------------------------- */
 }
 
 %union {
@@ -27,9 +32,11 @@
 	int yylex(void);
 	void yyerror(char*);
 
+    // global variable
 	TypeSymbol type_tmp;
-	int while_adr_tmp;
+	int depth;
 
+    // structures
 	SymbolTab * symbolTable;
 	MemoireInstr * memInst;
 %}
@@ -78,23 +85,29 @@ Main: 		tINT tFCT_MAIN tPO Params { printf("\n");} tPF Function_body { printf("m
 If:			tIF Condition_stmt  {
                                     mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
                                     mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0)); // wait @ of Else
+                                    depth ++;
                                 } If_Block Else;
 
 If_Block: 	Instruction
-			| tAO Body_line tAF { 	
-									mi_push(memInst, new_Instruction(op_jmp, I_ADR_UNFILLED, 0));
-								};
+			| tAO Body_line tAF;
 											
 
 Else:		tELSE 	{
-						mi_push(memInst, new_Instruction(op_jmp, I_ADR_UNFILLED));
+                        mi_push(memInst, new_Instruction(op_jmp, I_ADR_UNFILLED, 0));
 						mi_fill_jump(memInst, 1);
 					} Else_Block {
 								 	mi_fill_jump(memInst, 0);
+								 	mi_push(memInst, new_Instruction(op_nop));
+								 	ts_clean_depth(symbolTable, depth);
+								 	depth --;
 								 }
 
 			| %prec tIFX	{
 							 	mi_fill_jump(memInst, 0);
+							 	mi_push(memInst, new_Instruction(op_nop));
+							 	ts_clean_depth(symbolTable, depth);
+							 	depth --;
+
 							};
 
 Else_Block:	Instruction
@@ -105,14 +118,14 @@ While: tWHILE   {
                 } Condition_stmt    {
                                     mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
                                     mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
-
+                                    depth ++;
 
                                 }   While_Block {
                                                     mi_push(memInst, new_Instruction(op_jmp, $1, 0));
                                                     mi_fill_jump(memInst, 0);
-                                                    //mi_patch_jump(memInst, $1); // must patch before the target instruction
                                                     mi_push(memInst, new_Instruction(op_nop));
-
+                                                    ts_clean_depth(symbolTable, depth);
+                                                    depth--;
                                                 };
 
 While_Block: Instruction
@@ -131,12 +144,12 @@ Variables : Variable tVIRGULE Variables
             | Variable;
 
 Variable : tID {
-                    ts_push(symbolTable, $1, type_tmp);
+                    ts_push(symbolTable, $1, type_tmp, depth);
                     mi_push(memInst, new_Instruction(op_afc, 0, 0));
                     mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
                }
             | tID {
-                    ts_push(symbolTable, $1, type_tmp);
+                    ts_push(symbolTable, $1, type_tmp, depth);
                 } tOPAFC Expression {
                                         mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
                                         mi_push(memInst, new_Instruction(op_store, ts_getAdr(symbolTable, $1), 0));
@@ -158,13 +171,13 @@ Expression:	tID								{
 												if(existing_adr < 0) { 
 													printf("\n[error] %s undeclared\n", $1);
 												} else {
-												    ts_push(symbolTable, "tmp", s_int);
+												    ts_push(symbolTable, "tmp", s_int, depth);
 													mi_push(memInst, new_Instruction(op_load, 0, existing_adr));
 													mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
 												}
 											}
 			| tNB							{ 
-												ts_push(symbolTable, "tmp", s_int); 
+												ts_push(symbolTable, "tmp", s_int, depth);
 												mi_push(memInst, new_Instruction(op_afc, 0, $1));
 												mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
 											}
@@ -174,7 +187,7 @@ Expression:	tID								{
 			| Expression tOPMUL Expression 	{   util_op(symbolTable, memInst, $2);  }
 			| tOPSUB Expression 	{
 			                             mi_push(memInst, new_Instruction(op_afc, 0, 0));
-			                             ts_push(symbolTable, "tmp", s_int);
+			                             ts_push(symbolTable, "tmp", s_int, depth);
 			                             mi_push(memInst, new_Instruction(op_load, 1, ts_peek(symbolTable)));
 			                             mi_push(memInst, new_Instruction(op_sub, 0, 0, 1));
 			                             mi_push(memInst, new_Instruction(op_store, ts_peek(symbolTable), 0));
@@ -213,15 +226,7 @@ Params:		Param tVIRGULE Params
 			| Param;
 
 Param: tID 	{
-				printf("Param %s ",$1);
-				ErrorSymbolTab err = ts_push(symbolTable, $1, type_tmp); 
-
-				// handlle error after pushed
-				switch(err)	{
-					case st_success: break;
-					case st_existed: printf("\n[error] existed symbol %s\n\n", $1); break;
-					default: printf("\n[error] cas not handled \n\n");
-				}
+				ts_push(symbolTable, $1, type_tmp, depth);
 			};
 
 // Gestion de typage
@@ -232,6 +237,10 @@ Type:		tINT
 %%
 
 void init() {
+    // init global vars
+    depth = 0;
+
+    // init structs
 	symbolTable = new_SymbolTab();
 	memInst = new_MemoireInstr();
 }
@@ -240,7 +249,8 @@ int main(void) {
 	init();
 	yyparse();
 
-	ts_print(symbolTable);
+    if(SYMBOL_TABLE)            ts_print(symbolTable);
+	if(INSTRUCTION_MEMORY)	    mi_print(memInst);
 
 	mi_write(memInst, "test.asm");
 	util_copy_file("test.asm", "interpreter/test.asm");

@@ -5,15 +5,16 @@
  * @param symstr : 	variable name ("tmp" for temporary name)
  * @param type : 	see TypeSymbol
  * @param adr :		address assigment from symtab
+ * @param depth:	depth
  * @return new symbol
  */
-Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr)	{
+Symbol * new_Symbol(char * symstr, TypeSymbol type, int adr, int depth)	{
 	Symbol * sym = malloc(sizeof(Symbol));
 	sym->symbol = malloc(strlen(symstr));
 
 	strcpy(sym->symbol, symstr);
 
-	sym->depth = 0;
+	sym->depth = depth;
 	sym->type = type;
 
 	sym->adr = adr;
@@ -81,7 +82,6 @@ char * typeToString(TypeSymbol type)	{
  * @return 1 if true, else 0
  */
 int s_equals(Symbol * symbol, char * new_symbol, int depth) {
-	if (strcmp(symbol->symbol, new_symbol) == 0 && (depth < 0 || symbol->depth == depth))
-		return 1;
-	return 0;
+	return strcmp(symbol->symbol, new_symbol) == 0;
+
 }

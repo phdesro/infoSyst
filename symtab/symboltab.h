@@ -5,7 +5,7 @@
 #ifndef SYMBOLTAB_H
 #define SYMBOLTAB_H
 
-#define TABMAX 255
+#define TABMAX 1000
 
 typedef struct  {
     Symbol*	symbols[TABMAX];
@@ -33,10 +33,20 @@ int ts_peek(SymbolTab * tab);
 int ts_pop(SymbolTab * tab);
 
 /**
- * push new symbol to tab
- * @return : enum ErrorSymbolTab (st_success, st_full, st_existed)
+ * Delete symbol greater then this depth
+ * @param depth
  */
-ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type);
+void ts_clean_depth(SymbolTab * tab, int depth);
+
+/**
+ * push new symbol to tab
+ * @param tab
+ * @param symstr
+ * @param type
+ * @param depth
+ * @return
+ */
+ErrorSymbolTab ts_push(SymbolTab * tab, char * symstr, TypeSymbol type, int depth);
 
 /**
  * Pop the last symbol from tab

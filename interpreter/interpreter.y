@@ -4,6 +4,10 @@
 
 	#include "../memins/meminstr.h"
 	#include "machine/machine.h"
+
+    /* --------------------- Modifiez le MODE en 1 pour afficher le mémoire d'instruction -------------------------- */
+    #define MODE 0
+    /* ------------------------------------------------------------------------------------------------------------- */
 }
 
 %union {
@@ -48,8 +52,11 @@ int main(void) {
 	init();
 	yyparse();
 
-
     m_launch(machine);
-    m_print(machine);
+
+    if(MODE) {
+        m_print(machine);
+    }
+
 
 }

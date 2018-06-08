@@ -130,10 +130,13 @@ void mi_fill_jump(MemoireInstr * mem, int distance) {
 	// find jump node
 	int id_node = mem->nb_jump - distance - 1;
 
+
 	Node * jump_node = n_get(mem->first_jump, id_node);
 
 	// update the instruction coressponding
 //	i_setAddress(jump_node->instruction, mem->last_address + I_PADDING);
+
+
 	i_setAddress(jump_node->instruction, mem->last_address );
 
 	// delete node
@@ -144,6 +147,9 @@ void mi_fill_jump(MemoireInstr * mem, int distance) {
 		// TODO do we have this situation??
 		Node * precedence = n_get(mem->first_jump, id_node -1);
 		precedence->next = jump_node->next;
+		if(mem->last_jump == jump_node) {
+			mem->last_jump = precedence;
+		}
 	}
 
 	n_delete(jump_node);
