@@ -70,6 +70,13 @@ void mi_print(MemoireInstr * mem);
 void mi_fill_jump(MemoireInstr * mem, int distance);
 
 /**
+ * Fill the address of jump at a specific line
+ * @param mem
+ * @param line
+ */
+int mi_patch_jump(MemoireInstr * mem, int line);
+
+/**
  * Translate the instruction memory in asm code an save it in file
  * @param mem
  * @param filename

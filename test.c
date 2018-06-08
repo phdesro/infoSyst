@@ -1,4 +1,8 @@
 int main()   {
-	int a = 1;
-	int b = 2;
+
+	int a = 2;
+	while(1) {
+		echo(a);
+	}
+
 }

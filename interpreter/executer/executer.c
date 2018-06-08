@@ -38,10 +38,10 @@ int i_execute(Machine * machine, Instruction * instruction) {
 		case op_load:
 			return m_load_reg(machine, p0, p1);
 		case op_store:
-			return m_store_reg(machine, p0, p1);
+			return m_store_reg(machine, p1, p0);
 
 		case op_jmpc:
-			if(p1 != 0)
+			if(machine->regs[p1] != 0)
 				return 1;
 		case op_jmp:
 			return m_jump(machine, p0);
