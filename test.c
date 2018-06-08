@@ -1,4 +1,5 @@
 int main()   {
+
 	int a = 2;
 	if(a == 2) {
 		echo(a);
@@ -6,4 +7,6 @@ int main()   {
 		a = 3;
 		echo(a);
 	}
+
 }
+

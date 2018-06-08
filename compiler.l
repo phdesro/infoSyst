@@ -14,7 +14,7 @@
 /* Commentaires complexes */
 %}
 "/*"         			{	BEGIN(comment);	}
-<comment>[^*\n]*        
+<comment>[^*\n]*
 <comment>"*"+[^*/\n]*   
 <comment>\n             
 <comment>"*"+"/"        {	BEGIN(INITIAL);	}
