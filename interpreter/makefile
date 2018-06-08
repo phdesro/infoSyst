@@ -11,7 +11,7 @@ interpreter.tab.c: interpreter.y
 	~/bison/bin/bison -d -v interpreter.y
 
 exec: interpreter.tab.c lex.yy.c machine/machine.c executer/executer.c ../memins/opcode.c ../memins/instruction.c ../memins/meminstr.c
-	$(CC) -o interpreter lex.yy.c interpreter.tab.c machine/machine.c executer/executer.c ../memins/opcode.c ../memins/instruction.c ../memins/meminstr.c ../libfl.a ~/bison/lib/liby.a
+	$(CC) -std=c99 -o interpreter lex.yy.c interpreter.tab.c machine/machine.c executer/executer.c ../memins/opcode.c ../memins/instruction.c ../memins/meminstr.c ../libfl.a ~/bison/lib/liby.a
 	./interpreter < test.asm
 
 clean:

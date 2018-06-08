@@ -1,7 +1,8 @@
 int main()   {
 
-	int a = 2;
-	while(1) {
+	int a = 5;
+	while(a > 0) {
+	    a = a - 1;
 		echo(a);
 	}
 
