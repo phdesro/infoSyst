@@ -48,6 +48,8 @@ int i_execute(Machine * machine, Instruction * instruction) {
 
 		case op_echo:
 			return m_echo(machine, p0);
+		case op_nop:
+			return 1;	// do nothing
 
 		default:
 			printf("Unsupported operation : %s\n", op_string(instruction->operation));

@@ -23,6 +23,7 @@ char * op_string(OpCode op) {
 	case op_jmpc:	return "JMPC";
 	case op_jmp:	return "JMP";
 	case op_echo: 	return "ECHO";
+	case op_nop: 	return "NOP";
 	default:
 		return "###unknown###";
 	}
@@ -41,6 +42,8 @@ int op_args(OpCode op) {
 			return 2;
 		case op_jmp: case op_echo:
 			return 1;
+		case op_nop:
+			return 0;
 		default:
 			return -1;
 	}

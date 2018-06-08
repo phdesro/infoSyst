@@ -40,6 +40,7 @@
 "JMPC" 		{	yylval.lxOp = op_jmpc; 	    return tOP;		}
 "JMP" 		{	yylval.lxOp = op_jmp; 	    return tOP;		}
 "ECHO" 		{	yylval.lxOp = op_echo; 	    return tOP;		}
+"NOP" 		{	yylval.lxOp = op_nop; 	    return tOP;		}
 
 %{
 /* skip layout characters */

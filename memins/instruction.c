@@ -17,7 +17,7 @@ Instruction * new_Instruction(OpCode operation, ...) {
 	va_start(args, nbargs); // a warning here because we don't pass the nbargs in argument, but here we don't need to
 	#pragma GCC diagnostic pop
 
-	instr->param[0] = va_arg(args, int);
+	instr->param[0] = nbargs < 1 ? I_NO_PARAM : va_arg(args, int);
 	instr->param[1] = nbargs < 2 ? I_NO_PARAM : va_arg(args, int);
 	instr->param[2] = nbargs < 3 ? I_NO_PARAM : va_arg(args, int);
 

@@ -1,7 +1,9 @@
 int main()   {
 	int a = 2;
-	while(1) {
+	if(a == 2) {
+		echo(a);
+	} else {
+		a = 3;
 		echo(a);
 	}
-
 }

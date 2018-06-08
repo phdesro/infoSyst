@@ -36,6 +36,7 @@ S:      	Instruction S
 Instruction: tOP tINT tINT tINT { m_load_instruction(machine , new_Instruction($1, $2, $3, $4));  }
             | tOP tINT tINT     { m_load_instruction(machine , new_Instruction($1, $2, $3));  }
             | tOP tINT          { m_load_instruction(machine , new_Instruction($1, $2));  }
+            | tOP               { m_load_instruction(machine , new_Instruction($1)); }
 
 %%
 
@@ -47,7 +48,8 @@ int main(void) {
 	init();
 	yyparse();
 
-    m_launch(machine);
 
-	//m_print(machine);
+    m_launch(machine);
+    m_print(machine);
+
 }

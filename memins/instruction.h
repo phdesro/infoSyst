@@ -14,6 +14,8 @@ typedef struct {
 	int		param[3];
 } Instruction;
 
+#define I_PADDING 4
+
 /**
  * Instancy a new instruction, parameter value will be detected itself
  * @param operation
