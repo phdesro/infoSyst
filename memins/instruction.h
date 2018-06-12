@@ -52,4 +52,6 @@ void i_setAddress(Instruction * instruction, int address);
  */
 char * i_to_string(Instruction * instruction);
 
+char * i_binary(Instruction * instruction);
+
 #endif

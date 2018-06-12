@@ -1,5 +1,11 @@
 int main()   {
 
+	/*
+	int a = 2222222;
+	echo(a);
+	*/
+
+	/*
 	int a = 3;
 	a = a - 1;
 	echo(a);
@@ -10,11 +16,11 @@ int main()   {
 		a = 333;
 		echo(a);
 	}
-
+	*/
 
 	/*
 	int i;
-	i= 7- 7;
+	i= 7- 6;
 	if(i > 0) {
 	    while(i<5) { i = i + 1;
 	        echo(i);
@@ -30,6 +36,12 @@ int main()   {
         echo(i);
     }
     echo(i);
-	 */
+	*/
 
+	/*
+	int a = 3;
+	int b;
+	b = ((a == 2) ? 1 : 0) + 3;
+	echo(b);
+	 */
 }

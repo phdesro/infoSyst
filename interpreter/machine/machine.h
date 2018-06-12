@@ -88,4 +88,6 @@ int m_echo(Machine * machine, int reg);
  */
 void m_print(Machine * machine);
 
+void m_binary(Machine * machine, char* filename);
+
 #endif //INFOSYST_MACHINE_H

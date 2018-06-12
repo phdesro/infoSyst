@@ -50,5 +50,7 @@ char * op_string(OpCode op);
  */
 int op_args(OpCode op);
 
+char * op_binary(OpCode op);
+
 #endif
 

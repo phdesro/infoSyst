@@ -6,7 +6,8 @@
 	#include "machine/machine.h"
 
     /* --------------------- Modifiez le MODE en 1 pour afficher le mémoire d'instruction -------------------------- */
-    #define MODE 0
+    #define VIRTUAL_MACHINE 0
+    #define BINARY 1
     /* ------------------------------------------------------------------------------------------------------------- */
 }
 
@@ -54,8 +55,14 @@ int main(void) {
 
     m_launch(machine);
 
-    if(MODE) {
+    if(VIRTUAL_MACHINE) {
         m_print(machine);
+    }
+
+    if(BINARY) {
+        printf("Binary mode activated\n");
+        m_binary(machine, "test.hex");
+        printf("Binary code has been written in 'test.hex' file\n");
     }
 
 

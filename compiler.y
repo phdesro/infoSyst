@@ -6,7 +6,7 @@
 	#include "util/util.h"
 
     /* --------------------- Modifiez le MODE en 1 pour afficher  -------------------------- */
-    #define SYMBOL_TABLE 1
+    #define SYMBOL_TABLE 0
     #define INSTRUCTION_MEMORY 1
     /* ------------------------------------------------------------------------------------- */
 }
@@ -200,7 +200,19 @@ Expression:	tID								{
             | Expression tDIF       Expression 	    {   util_op(symbolTable, memInst, $2); }
 
 			| tPO Expression tPF
-			| Expression tQUESTION Expression tDOUBLEDOTS Expression { printf("ternary\n"); }; //TODO check if we collect correctly information
+			| tPO Expression tPF tQUESTION {
+			                            mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+                                        mi_push(memInst, new_Instruction(op_jmpc, I_ADR_UNFILLED, 0));
+			                        }   Expression tDOUBLEDOTS {
+			                                                        $<nb>4 = ts_peek(symbolTable);
+			                                                        mi_push(memInst, new_Instruction(op_jmp, I_ADR_UNFILLED, 0));
+			                                                        mi_push(memInst, new_Instruction(op_nop));
+                                                                    mi_fill_jump(memInst, 1);
+			                                                    } Expression    {
+			                                                                        mi_push(memInst, new_Instruction(op_load, 0, ts_pop(symbolTable)));
+			                                                                        mi_push(memInst, new_Instruction(op_store, $<nb>4, 0));
+                                                                                    mi_fill_jump(memInst, 0);
+                                                                                };
 
 /*-------------- Functions specifiques --------------*/
 Call_function:  Printf tFIN_I

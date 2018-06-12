@@ -49,3 +49,28 @@ int op_args(OpCode op) {
 	}
 
 }
+
+char * op_binary(OpCode op) {
+	switch(op) {
+		case op_add:	return "01";
+		case op_sub:	return "03";
+		case op_mul:	return "02";
+		case op_div:	return "04";
+		case op_equ:	return "09";
+		case op_inf:	return "0A";
+		case op_infe:	return "0B";
+		case op_sup:	return "0C";
+		case op_supe:	return "0D";
+		case op_cop:	return "05";
+		case op_afc:	return "06";
+		case op_load:	return "07";
+		case op_store:	return "08";
+		case op_jmpc:	return "0F";
+		case op_jmp:	return "0E";
+
+		case op_echo: 	return "10";
+		case op_nop: 	return "00";
+		default:
+			return "XX";
+	}
+}

@@ -100,3 +100,24 @@ char * i_to_string(Instruction * instruction) {
 
 	return str;
 }
+
+char * i_binary(Instruction * instruction) {
+	char * operation = op_binary(instruction->operation);
+	int arg_num = op_args(instruction->operation);
+	int length = strlen(operation) + arg_num*2;
+
+	char * str = malloc(sizeof(char) * length);
+	strcpy(str, operation);
+	for(int i = 0; i < 3; i++) {
+
+		char registre[2];
+		if(i < arg_num)
+			sprintf(registre, "%02d", instruction->param[i]);
+		else
+			sprintf(registre, "%02d", 0);
+
+		strcat(str, registre);
+	}
+
+	return str;
+}

@@ -175,3 +175,18 @@ void m_print(Machine * machine) {
 
 	printf("}\n");
 }
+
+void m_binary(Machine * machine, char* filename) {
+	FILE *file = fopen(filename, "w");
+	if (file == NULL)
+	{
+		perror("Error opening file : ");
+		return;
+	}
+
+	for(int i = 0; i <= machine->current_instruction; i++) {
+		fprintf(file, "%s\n", i_binary(machine->instruction_memory[i]));
+	}
+
+	fclose(file);
+}
